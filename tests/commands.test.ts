@@ -1,0 +1,345 @@
+process.env.AWS_REGION = 'LOCAL'
+
+import { mocked } from 'ts-jest/utils';
+jest.mock('@aws-sdk/client-dynamodb');
+
+import { DynamoDBClient, PutItemCommand, GetItemCommand, DeleteItemCommand, UpdateItemCommand, QueryCommand } from '@aws-sdk/client-dynamodb';
+const mockedPutItemCommand = mocked(PutItemCommand);
+const mockedUpdateItemCommand = mocked(UpdateItemCommand);
+const mockedGetItemCommand = mocked(GetItemCommand);
+const mockedDeleteItemCommand = mocked(DeleteItemCommand);
+const mockedQueryCommand = mocked(QueryCommand);
+const mockedDynamoDBClient = mocked(DynamoDBClient, true);
+
+import { CreateCommand, DeleteCommand, RetrieveCommand, UpdateCommand, ReplaceCommand, ListCommand } from '../src/db/commands';
+
+const dynamoDBClient = new DynamoDBClient({});
+
+describe('CreateCommand', () => {
+    test('Sends right command to DynamoDBClient', () => {
+        return new CreateCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            }, 
+            {
+                id: 'OVERWRITTEN',
+                value: 'lol'
+            }
+        ).send().then(data => {
+            expect(data).toEqual({
+                id: '123',
+                value: 'lol'
+            });
+
+            expect(mockedPutItemCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    Item: {
+                        id: {
+                            S: '123'
+                        },
+                        value: {
+                            S: 'lol'
+                        }
+                    },
+                    ConditionExpression: 'attribute_not_exists(id)'
+                })
+            );
+        });
+    });
+});
+
+describe('UpdateCommand', () => {
+    test('Sends right command to DynamoDBClient', () => {
+        return new UpdateCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            }, 
+            {
+                value: 'lol',
+                'nested.value': 'lil'
+            },
+            {
+                additionalConditions: {
+                    field: 'value'
+                }
+            }
+        ).send().then(data => {
+            expect(data).toBeNull();
+
+            expect(mockedUpdateItemCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    Key: {
+                        id: {
+                            S: '123'
+                        }
+                    },
+                    UpdateExpression: 'SET #0_0 = :0, #1_0.#1_1 = :1',
+                    ExpressionAttributeNames: {
+                        '#0_0': 'value',
+                        '#1_0': 'nested',
+                        '#1_1': 'value',
+                        '#cond0_0': 'field' 
+                    },
+                    ExpressionAttributeValues: {
+                        ':0': { S: 'lol' },
+                        ':1': { S: 'lil' },
+                        ':cond0': { S: 'value' }
+                    },
+                    ConditionExpression: 'attribute_exists(id) AND #cond0_0 = :cond0',
+                    ReturnValues: 'ALL_NEW'
+                })
+            );
+        });
+    });
+});
+
+describe('ReplaceCommand', () => {
+    test('Sends right command to DynamoDBClient', () => {
+        return new ReplaceCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            }, 
+            {
+                id: 'OVERWRITTEN',
+                value: 'lol'
+            },
+            {
+                additionalConditions: {
+                    field: 'value'
+                }
+            }
+        ).send().then(data => {
+            expect(data).toMatchObject({
+                id: '123',
+                value: 'lol'
+            });
+
+            expect(mockedPutItemCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    Item: {
+                        id: {
+                            S: '123'
+                        },
+                        value: {
+                            S: 'lol'
+                        }
+                    },
+                    ExpressionAttributeNames: {
+                        '#0_0': 'field' 
+                    },
+                    ExpressionAttributeValues: {
+                        ':0': { S: 'value' }
+                    },
+                    ConditionExpression: 'attribute_exists(id) AND #0_0 = :0',
+                })
+            );
+        });
+    });
+
+    test('Do not send empty expression attributes', () => {
+        return new ReplaceCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            }, 
+            {
+                value: 'lol'
+            }
+        ).send().then(data => {
+            expect(data).toMatchObject({
+                id: '123',
+                value: 'lol'
+            });
+
+            expect(mockedPutItemCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    Item: {
+                        id: {
+                            S: '123'
+                        },
+                        value: {
+                            S: 'lol'
+                        }
+                    },
+                    ExpressionAttributeNames:  undefined,
+                    ExpressionAttributeValues: undefined,
+                    ConditionExpression: 'attribute_exists(id)'
+                })
+            );
+        });
+    });
+});
+
+describe('RetrieveCommand', () => {
+    test('Sends right command to DynamoDBClient', () => {
+        return new RetrieveCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            } 
+        ).send().then(data => {
+            expect(data).toBeNull();
+
+            expect(mockedGetItemCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    Key: {
+                        id: {
+                            S: '123'
+                        }
+                    }
+                })
+            );
+        });
+    });
+});
+
+describe('DeleteCommand', () => {
+    test('Sends right command to DynamoDBClient', () => {
+        return new DeleteCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            }, 
+            {
+                additionalConditions: {
+                    field: 'value'
+                }
+            }
+        ).send().then(data => {
+            expect(mockedDeleteItemCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    Key: {
+                        id: {
+                            S: '123'
+                        }
+                    },
+                    ExpressionAttributeNames: {
+                        '#0_0': 'field' 
+                    },
+                    ExpressionAttributeValues: {
+                        ':0': { S: 'value' }
+                    },
+                    ConditionExpression: 'attribute_exists(id) AND #0_0 = :0',
+                })
+            );
+        });
+    });
+
+    test('Do not send empty expression attributes', () => {
+        return new DeleteCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            } 
+        ).send().then(data => {
+            expect(mockedDeleteItemCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    Key: {
+                        id: {
+                            S: '123'
+                        }
+                    },
+                    ExpressionAttributeNames:  undefined,
+                    ExpressionAttributeValues: undefined,
+                    ConditionExpression: 'attribute_exists(id)'
+                })
+            );
+        });
+    });
+});
+
+describe('ListCommand', () => {
+    test('Sends right command to DynamoDBClient', () => {
+        mockedQueryCommand.mockClear();
+        return new ListCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            }, 
+            {
+                limit: 15,
+                ascending: true,
+                from: { test: 'lol' }
+            }
+        ).send().then(data => {
+            expect(mockedQueryCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    KeyConditionExpression: '#0_0 = :0',
+                    ExpressionAttributeNames: {
+                        '#0_0': 'id'
+                    },
+                    ExpressionAttributeValues: {
+                        ':0': { S: '123' },
+                    },
+                    Limit: 15,
+                    ScanIndexForward: true,
+                    ExclusiveStartKey: {
+                        test: 'lol'
+                    }
+                })
+            );
+        });
+    });
+    test('Sends right command to DynamoDBClient with index and sortKeyCriteria', () => {
+        mockedQueryCommand.mockClear();
+        return new ListCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            }, 
+            {
+                limit: 15,
+                ascending: true,
+                from: { test: 'lol' },
+                indexName: 'index',
+                sortKeyCriteria: [
+                    { operator: 'begins_with', value: { sort: 'start' }},
+                    { operator: '<', value: { sort: 'lower' }}
+                ]
+            }
+        ).send().then(data => {
+            expect(mockedQueryCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    KeyConditionExpression: '#0_0 = :0 AND begins_with(#skc00_0, :skc00) AND #skc10_0 < :skc10',
+                    ExpressionAttributeNames: {
+                        '#0_0': 'id',
+                        '#skc00_0': 'sort',
+                        '#skc10_0': 'sort'
+                    },
+                    ExpressionAttributeValues: {
+                        ':0': { S: '123' },
+                        ':skc00': { S: 'start' },
+                        ':skc10': { S: 'lower' }
+                    },
+                    Limit: 15,
+                    ScanIndexForward: true,
+                    IndexName: 'index',
+                    ExclusiveStartKey: {
+                        test: 'lol'
+                    }
+                })
+            );
+        });
+    });
+});

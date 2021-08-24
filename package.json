@@ -1,0 +1,40 @@
+{
+  "name": "@toaztr/commons",
+  "version": "0.0.0",
+  "description": "Common utilities",
+  "scripts": {
+    "build": "tsc",
+    "test": "npx jest --silent",
+    "sync": "git remote -v | grep upstream || git remote add upstream git@github.com:Toaztr/commons.git && git checkout master && git fetch upstream master && git rebase upstream/master && git push origin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Toaztr/commons.git"
+  },
+  "keywords": [
+    "api",
+    "fintech",
+    "toaztr"
+  ],
+  "author": "Toaztr SAS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Toaztr/commons/issues"
+  },
+  "homepage": "https://github.com/Toaztr/commons#readme",
+  "devDependencies": {
+    "@types/jest": "^27.0.1",
+    "@types/node": "16.7.1",
+    "@types/uuid": "^8.3.1",
+    "jest": "^27.0.6",
+    "jest-html-reporters": "^2.1.6",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.27.0",
+    "@aws-sdk/util-dynamodb": "^3.27.0",
+    "uuid": "^8.3.2"
+  }
+}
