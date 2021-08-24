@@ -10,6 +10,9 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    "./": "./dist/"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Toaztr/commons.git"
