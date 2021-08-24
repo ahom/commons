@@ -7,6 +7,9 @@
     "test": "npx jest --silent",
     "sync": "git remote -v | grep upstream || git remote add upstream git@github.com:Toaztr/commons.git && git checkout master && git fetch upstream master && git rebase upstream/master && git push origin"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Toaztr/commons.git"
