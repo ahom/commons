@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://www.github.com/Toaztr/commons/compare/v1.1.0...v1.2.0) (2021-08-24)
+
+
+### Features
+
+* deliver only dist ([d53951b](https://www.github.com/Toaztr/commons/commit/d53951bc4ad063b610e40b3d5e53c29f78704650))
+
 ## [1.1.0](https://www.github.com/Toaztr/commons/compare/v1.0.0...v1.1.0) (2021-08-24)
 
 
