@@ -11,7 +11,12 @@
     "dist"
   ],
   "exports": {
-    "./": "./dist/"
+    "./*": "./dist/*"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [ "dist/*" ]
+    }
   },
   "repository": {
     "type": "git",
