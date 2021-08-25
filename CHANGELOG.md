@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://www.github.com/Toaztr/commons/compare/v1.3.0...v1.4.0) (2021-08-25)
+
+
+### Features
+
+* types in dist ([1bed588](https://www.github.com/Toaztr/commons/commit/1bed5888b3ba4c9a704659bd55f4249f9721ac6f))
+
 ## [1.3.0](https://www.github.com/Toaztr/commons/compare/v1.2.0...v1.3.0) (2021-08-25)
 
 
