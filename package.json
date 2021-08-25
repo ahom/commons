@@ -10,16 +10,6 @@
   "files": [
     "dist"
   ],
-  "exports": {
-    "./*": "./dist/*"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Toaztr/commons.git"
