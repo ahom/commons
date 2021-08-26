@@ -193,7 +193,7 @@ export function listResources<H, HT, ST>(props: {
                     Math.max(
                         0,
                         parseInt(rawPageSize)
-                    ), 20
+                    ), 100
                 );
             } catch (e) {
                 console.info(`Error while trying to parse page[size] parameter: ${e}`);
