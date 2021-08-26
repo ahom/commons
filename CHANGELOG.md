@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://www.github.com/Toaztr/commons/compare/v1.4.0...v1.5.0) (2021-08-26)
+
+
+### Features
+
+* increase limit ([b729c58](https://www.github.com/Toaztr/commons/commit/b729c5815bf6e60c8e3127acf388ea6eec4f3594))
+
 ## [1.4.0](https://www.github.com/Toaztr/commons/compare/v1.3.0...v1.4.0) (2021-08-25)
 
 
