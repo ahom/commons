@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.5.1](https://www.github.com/Toaztr/commons/compare/v1.5.0...v1.5.1) (2021-08-29)
+
+
+### Bug Fixes
+
+* upgrade dependencies ([3d63d15](https://www.github.com/Toaztr/commons/commit/3d63d154263dea189d1e44fe399d14bd8d4c860f))
+
 ## [1.5.0](https://www.github.com/Toaztr/commons/compare/v1.4.0...v1.5.0) (2021-08-26)
 
 
