@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://www.github.com/Toaztr/commons/compare/v1.5.1...v1.6.0) (2021-08-30)
+
+
+### Features
+
+* Adds hasValidUser guard ([a154580](https://www.github.com/Toaztr/commons/commit/a1545805c52c9e2a7970067d8f074fef21084a06))
+
 ### [1.5.1](https://www.github.com/Toaztr/commons/compare/v1.5.0...v1.5.1) (2021-08-29)
 
 
