@@ -9,7 +9,12 @@ export interface HttpEvent {
         accountId?: string,
         apiId?: string,
         authorizer?: {
-            lambda?: any
+            lambda?: {
+                applicationId?: string,
+                subscriptionId?: string,
+                userId?: string,
+                scopes?: string
+            }
         },
         http?: {
             method?: string,
