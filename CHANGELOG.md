@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.6.1](https://www.github.com/Toaztr/commons/compare/v1.6.0...v1.6.1) (2021-08-30)
+
+
+### Bug Fixes
+
+* better HttpEvent type ([5207436](https://www.github.com/Toaztr/commons/commit/5207436d36c92475deff0c0d89372db56629bf36))
+
 ## [1.6.0](https://www.github.com/Toaztr/commons/compare/v1.5.1...v1.6.0) (2021-08-30)
 
 
