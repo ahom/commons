@@ -163,6 +163,16 @@ export const hasActiveSubscription: HttpRequestFunc = (r) => {
     return undefined;
 }
 
+export const hasValidUser: HttpRequestFunc = (r) => {
+    if (!r.secContext.hasValidUser()) {
+        console.info('No valid user');
+        return {
+            statusCode: 403
+        };
+    }
+    return undefined;
+}
+
 export function isScopeAuthorized(scope: string): HttpRequestFunc {
     return (r: HttpRequest): HttpResponse | undefined => {
         if (!r.secContext.isScopeAuthorized(scope)) {
