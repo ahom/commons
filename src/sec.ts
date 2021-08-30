@@ -30,6 +30,10 @@ export class SecurityContext {
         return !!this.props.subscriptionId;
     }
 
+    hasValidUser(): boolean {
+        return !!this.props.userId;
+    }
+
     static fromAuthorizer(authorizer: any): SecurityContext {
         return new SecurityContext({
             applicationId: authorizer?.lambda?.applicationId,

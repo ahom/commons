@@ -7,6 +7,12 @@ describe('SecurityContext', () => {
     test('Active subscription', () => {
         expect(new SecurityContext({ subscriptionId: 'lal' }).hasActiveSubscription()).toBeTruthy();
     });
+    test('No valid user', () => {
+        expect(new SecurityContext({}).hasValidUser()).toBeFalsy();
+    });
+    test('Valid user', () => {
+        expect(new SecurityContext({ userId: 'lul' }).hasValidUser()).toBeTruthy();
+    });
     test('No scope authorized', () => {
         expect(new SecurityContext({}).isScopeAuthorized('lol')).toBeFalsy();
     });
