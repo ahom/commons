@@ -274,6 +274,8 @@ export class DeleteCommand<KeyType = any> implements TransactionItemCompatibleCo
             Delete: {
                 TableName: this.tableName,
                 Key: this.key,
+                ExpressionAttributeNames: this.expressionAttributesNames,
+                ExpressionAttributeValues: this.expressionAttributeValues,
                 ConditionExpression: this.conditionExpression
             }
         }
