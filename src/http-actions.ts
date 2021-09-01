@@ -1,14 +1,25 @@
 import { DeleteCommandOptions, ListCommand, ListCommandOptions, UpdateCommandOptions } from "./db/commands";
 import { filterResourceFields, ResourceTable } from "./db/resource-table";
-import { hasHeaders, HttpRequest, HttpRequestAsyncFunc } from "./http";
+import { HttpRequest, HttpRequestAsyncFunc } from "./http";
 import { uuid } from "./utils";
-
-function isExtensibleAttributes(data: any): data is Object {
-    return data instanceof Object;
-} 
 
 function defaultIdCreator(r: HttpRequest) {
     return uuid();
+}
+
+export function postResourceCommand<H, S, HT, ST, A>(r: HttpRequest, props: {
+    table: ResourceTable<H, S, HT, ST, A>,
+    keyFn: (r: HttpRequest, id: string) => H & S,
+    idFn?: (r: HttpRequest) => string,
+    overrideFields?: (r: HttpRequest, data: any) => any
+}) {
+    const data = r.bodyAsJson();
+    const id = props.idFn ? props.idFn(r) : defaultIdCreator(r);
+    return props.table.createCommand(
+        id,
+        props.keyFn(r, id), 
+        props.overrideFields ? props.overrideFields(r, data) : data
+    );
 }
 
 export function postResource<H, S, HT, ST, A>(props: {
@@ -18,19 +29,7 @@ export function postResource<H, S, HT, ST, A>(props: {
     overrideFields?: (r: HttpRequest, data: any) => any
 }): HttpRequestAsyncFunc {
     return async (r: HttpRequest) => {
-        const data = r.bodyAsJson();
-        if (!isExtensibleAttributes(data)) {
-            console.error('Data is not an object');
-            return {
-                statusCode: 500
-            };
-        }
-        const id = props.idFn ? props.idFn(r) : defaultIdCreator(r);
-        const value = await props.table.createCommand(
-            id,
-            props.keyFn(r, id), 
-            props.overrideFields ? props.overrideFields(r, data) : data
-        ).send();
+        const value = await postResourceCommand(r, props).send();
         return {
             statusCode: 201,
             headers: {
@@ -43,18 +42,11 @@ export function postResource<H, S, HT, ST, A>(props: {
 
 export function getResource<H, S, HT, ST, A>(props: {
     table: ResourceTable<H, S, HT, ST, A>,
-    keyFn: (r: HttpRequest) => H & S,
-    shouldBeHidden?: (r: HttpRequest, p: any) => boolean
+    keyFn: (r: HttpRequest) => H & S
 }): HttpRequestAsyncFunc {
     return async (r: HttpRequest) => {
         const value = await props.table.retrieveCommand(props.keyFn(r)).send();
         if (!value) {
-            return {
-                statusCode: 404
-            };
-        }
-        if (props.shouldBeHidden && props.shouldBeHidden(r, value)) {
-            console.info(`Hidden resource: ${props.keyFn(r)}`)
             return {
                 statusCode: 404
             };
@@ -69,13 +61,32 @@ export function getResource<H, S, HT, ST, A>(props: {
     };
 }
 
-export const hasIfMatchHeader = hasHeaders(['if-match']);
-
 function fetchETag(r: HttpRequest): string | undefined {
     if (!r.headers) {
         return undefined;
     }
     return r.headers!['if-match']?.toString();
+}
+
+export function putResourceCommand<H, S, HT, ST, A>(r: HttpRequest, props: {
+    table: ResourceTable<H, S, HT, ST, A>,
+    keyFn: (r: HttpRequest) => H & S,
+    updateOptions?: (r: HttpRequest) => UpdateCommandOptions
+}) {
+    const data = r.bodyAsJson();
+    const etag = fetchETag(r);
+    return props.table.updateCommand(
+        props.keyFn(r), 
+        data,
+        {
+            ...(props.updateOptions ? props.updateOptions(r) : {}),
+            ...(etag ? {
+                additionalConditions: {
+                    'meta.etag': etag
+                }
+            } : {})
+        }
+    );
 }
 
 export function putResource<H, S, HT, ST, A>(props: {
@@ -84,28 +95,8 @@ export function putResource<H, S, HT, ST, A>(props: {
     updateOptions?: (r: HttpRequest) => UpdateCommandOptions
 }): HttpRequestAsyncFunc {
     return async (r: HttpRequest) => {
-        const data = r.bodyAsJson();
-        if (!isExtensibleAttributes(data)) {
-            console.error('Data is not an object');
-            return {
-                statusCode: 500
-            };
-        }
         try {
-            const etag = fetchETag(r);
-            const value = await props.table.updateCommand(
-                props.keyFn(r), 
-                data,
-                {
-                    ...(props.updateOptions ? props.updateOptions(r) : {}),
-                    ...(etag ? {
-                        additionalConditions: {
-                            'meta.etag': etag
-                        }
-                    } : {})
-                }
-            ).send();
-
+            const value = await putResourceCommand(r, props).send();
             if (!value) {
                 return {
                     statusCode: 404
@@ -130,6 +121,25 @@ export function putResource<H, S, HT, ST, A>(props: {
     };
 }
 
+export function deleteResourceCommand<H, S, HT, ST, A>(r: HttpRequest, props: {
+    table: ResourceTable<H, S, HT, ST, A>,
+    keyFn: (r: HttpRequest) => H & S,
+    deleteOptions?: (r: HttpRequest) => DeleteCommandOptions
+}) {
+    const etag = fetchETag(r);
+    return props.table.deleteCommand(
+        props.keyFn(r), 
+        {
+            ...(props.deleteOptions ? props.deleteOptions(r) : {}),
+            ...(etag ? {
+                additionalConditions: {
+                    'meta.etag': etag
+                }
+            } : {})
+        }
+    );
+}
+
 export function deleteResource<H, S, HT, ST, A>(props: {
     table: ResourceTable<H, S, HT, ST, A>,
     keyFn: (r: HttpRequest) => H & S,
@@ -137,18 +147,7 @@ export function deleteResource<H, S, HT, ST, A>(props: {
 }): HttpRequestAsyncFunc {
     return async (r: HttpRequest) => {
         try {
-            const etag = fetchETag(r);
-            await props.table.deleteCommand(
-                props.keyFn(r), 
-                {
-                    ...(props.deleteOptions ? props.deleteOptions(r) : {}),
-                    ...(etag ? {
-                        additionalConditions: {
-                            'meta.etag': etag
-                        }
-                    } : {})
-                }
-            ).send();
+            await deleteResourceCommand(r, props).send();
             return {
                 statusCode: 200
             };

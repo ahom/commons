@@ -68,25 +68,6 @@ describe('GetResource', () => {
                 expect(data.statusCode).toEqual(404);
             });
     });
-    test('404 on hidden document', () => {
-        mockedSend.mockImplementationOnce(() => ({
-            Item: {
-                id: { S: 'ID' },
-                postal_code: { S: 'HIDE_ME' }
-            }
-        }));
-        return HttpRequest.fromEvent({
-                pathParameters: {
-                    id: 'ID'
-                }
-            }).run(getResource({
-                table,
-                keyFn: (r) => ({ id: r.params!.id!, sort: 's' }),
-                shouldBeHidden: (r, p) => p.postal_code === 'HIDE_ME'
-            })).then(data => {
-                expect(data.statusCode).toEqual(404);
-            });
-    });
     test('500 on error', () => {
         mockedSend.mockImplementationOnce(() => { throw new Error() });
         return HttpRequest.fromEvent({
