@@ -1,12 +1,12 @@
+export interface AuthorizerContext {
+    readonly applicationId?: string,
+    readonly subscriptionId?: string,
+    readonly userId?: string,
+    readonly scopes?: string[]
+}
+
 export class SecurityContext {
-    constructor(
-        public readonly props: {
-            readonly applicationId?: string,
-            readonly subscriptionId?: string,
-            readonly userId?: string,
-            readonly scopes?: string[]
-        }
-    ) {}
+    constructor(public readonly props: AuthorizerContext) {}
 
     isScopeAuthorized(scopeName: string): boolean {
         if (!this.props.scopes) return false;
@@ -34,7 +34,7 @@ export class SecurityContext {
         return !!this.props.userId;
     }
 
-    static fromAuthorizer(authorizer: any): SecurityContext {
+    static fromAuthorizer(authorizer?: { lambda?: AuthorizerContext }): SecurityContext {
         return new SecurityContext({
             applicationId: authorizer?.lambda?.applicationId,
             subscriptionId: authorizer?.lambda?.subscriptionId,
