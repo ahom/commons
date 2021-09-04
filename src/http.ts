@@ -1,4 +1,4 @@
-import { SecurityContext } from './sec';
+import { SecurityContext, AuthorizerContext } from './sec';
 
 type Headers = {[header: string]: boolean | number | string};
 type Parameters = {[name: string]: string | undefined};
@@ -9,12 +9,7 @@ export interface HttpEvent {
         accountId?: string,
         apiId?: string,
         authorizer?: {
-            lambda?: {
-                applicationId?: string,
-                subscriptionId?: string,
-                userId?: string,
-                scopes?: string
-            }
+            lambda?: AuthorizerContext
         },
         http?: {
             method?: string,
