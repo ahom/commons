@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://www.github.com/Toaztr/commons/compare/v1.6.1...v1.7.0) (2021-09-04)
+
+
+### Features
+
+* Split http-actions ([18ddd81](https://www.github.com/Toaztr/commons/commit/18ddd81942bff03b799ca0e41b6b1afef5057e6d))
+
+
+### Bug Fixes
+
+* type of scopes ([a7a0f13](https://www.github.com/Toaztr/commons/commit/a7a0f1384004a36f6f30312c97af9a9d545aed55))
+
 ### [1.6.1](https://www.github.com/Toaztr/commons/compare/v1.6.0...v1.6.1) (2021-08-30)
 
 
