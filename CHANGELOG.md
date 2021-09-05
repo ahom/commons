@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.7.1](https://www.github.com/Toaztr/commons/compare/v1.7.0...v1.7.1) (2021-09-05)
+
+
+### Bug Fixes
+
+* dependencies updates ([ce4743c](https://www.github.com/Toaztr/commons/commit/ce4743c528458ef7c023670c38f6a77f0d039a2f))
+
 ## [1.7.0](https://www.github.com/Toaztr/commons/compare/v1.6.1...v1.7.0) (2021-09-04)
 
 
