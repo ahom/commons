@@ -61,13 +61,18 @@ export class CreateCommand<KeyType = any, ValueType = any> implements Transactio
     }
 }
 
+export interface RetrieveCommandOptions {
+    readonly consistentRead?: boolean
+}
+
 export class RetrieveCommand<KeyType = any, ValueType = any> {
     readonly key: any;
 
     constructor(
         readonly dynamoDBClient: DynamoDBClient,
         readonly tableName: string,
-        key: KeyType
+        key: KeyType,
+        readonly options?: RetrieveCommandOptions
     ) {
         this.key = marshall(key);
     }
@@ -75,7 +80,8 @@ export class RetrieveCommand<KeyType = any, ValueType = any> {
     async send(): Promise<ValueType | null> {
         const item = await this.dynamoDBClient.send(new GetItemCommand({
             TableName: this.tableName,
-            Key: this.key
+            Key: this.key,
+            ConsistentRead: this.options?.consistentRead
         }));
 
         if (item?.Item) {

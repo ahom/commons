@@ -188,6 +188,9 @@ describe('RetrieveCommand', () => {
             'table', 
             {
                 id: '123'
+            },
+            {
+                consistentRead: true
             } 
         ).send().then(data => {
             expect(data).toBeNull();
@@ -199,7 +202,8 @@ describe('RetrieveCommand', () => {
                         id: {
                             S: '123'
                         }
-                    }
+                    },
+                    ConsistentRead: true
                 })
             );
         });
