@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://www.github.com/Toaztr/commons/compare/v1.8.0...v1.9.0) (2021-09-06)
+
+
+### Features
+
+* Adds ConsistentRead options for GET ([535ab4b](https://www.github.com/Toaztr/commons/commit/535ab4ba8ea6b2c8fa99276ffefbfbdce06f6aac))
+
 ## [1.8.0](https://www.github.com/Toaztr/commons/compare/v1.7.1...v1.8.0) (2021-09-06)
 
 
