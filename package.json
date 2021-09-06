@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.29.0",
+    "@aws-sdk/client-lambda": "3.29.0",
     "@aws-sdk/util-dynamodb": "3.29.0",
     "uuid": "8.3.2"
   }
