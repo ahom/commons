@@ -20,3 +20,6 @@ export function safe<T>(value?: T): T {
 export function normalizeString(value: string): string {
     return value.normalize('NFD').replace(/[^A-Za-z0-9]/g, '').toLowerCase();
 }
+
+export const ifMatchHeader = 'if-match';
+export const consistentReadHeader = 'x-consistent-read';

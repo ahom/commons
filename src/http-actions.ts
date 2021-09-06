@@ -1,7 +1,7 @@
 import { DeleteCommandOptions, ListCommand, ListCommandOptions, UpdateCommandOptions } from "./db/commands";
 import { filterResourceFields, ResourceTable } from "./db/resource-table";
 import { HttpRequest, HttpRequestAsyncFunc } from "./http";
-import { uuid } from "./utils";
+import { consistentReadHeader, ifMatchHeader, uuid } from "./utils";
 
 function defaultIdCreator(r: HttpRequest) {
     return uuid();
@@ -40,12 +40,21 @@ export function postResource<H, S, HT, ST, A>(props: {
     };
 }
 
+function fetchConsistentRead(r: HttpRequest): boolean | undefined {
+    if (!r.headers) {
+        return undefined;
+    }
+    return r.headers![consistentReadHeader]?.toString() === '1';
+}
+
 export function getResource<H, S, HT, ST, A>(props: {
     table: ResourceTable<H, S, HT, ST, A>,
     keyFn: (r: HttpRequest) => H & S
 }): HttpRequestAsyncFunc {
     return async (r: HttpRequest) => {
-        const value = await props.table.retrieveCommand(props.keyFn(r)).send();
+        const value = await props.table.retrieveCommand(props.keyFn(r), {
+            consistentRead: fetchConsistentRead(r)
+        }).send();
         if (!value) {
             return {
                 statusCode: 404
@@ -65,7 +74,7 @@ function fetchETag(r: HttpRequest): string | undefined {
     if (!r.headers) {
         return undefined;
     }
-    return r.headers!['if-match']?.toString();
+    return r.headers![ifMatchHeader]?.toString();
 }
 
 export function putResourceCommand<H, S, HT, ST, A>(r: HttpRequest, props: {
