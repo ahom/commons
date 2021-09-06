@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://www.github.com/Toaztr/commons/compare/v1.7.1...v1.8.0) (2021-09-06)
+
+
+### Features
+
+* Adds new httpCall ([b27c972](https://www.github.com/Toaztr/commons/commit/b27c9725a4321da56d211a3aa1be44bd89ccb339))
+
 ### [1.7.1](https://www.github.com/Toaztr/commons/compare/v1.7.0...v1.7.1) (2021-09-05)
 
 
