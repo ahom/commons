@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.9.1](https://www.github.com/Toaztr/commons/compare/v1.9.0...v1.9.1) (2021-09-12)
+
+
+### Bug Fixes
+
+* update return value type of commands ([c17f06f](https://www.github.com/Toaztr/commons/commit/c17f06f0482a6989422de252d836d7f541bb82e3))
+
 ## [1.9.0](https://www.github.com/Toaztr/commons/compare/v1.8.0...v1.9.0) (2021-09-06)
 
 
