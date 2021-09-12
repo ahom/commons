@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://www.github.com/Toaztr/commons/compare/v1.9.3...v1.10.0) (2021-09-12)
+
+
+### Features
+
+* Adds proper subscription structure with item ref ([c175b2c](https://www.github.com/Toaztr/commons/commit/c175b2ccb2ea2de7e20fc378d5391475d18c0948))
+
 ### [1.9.3](https://www.github.com/Toaztr/commons/compare/v1.9.2...v1.9.3) (2021-09-12)
 
 
