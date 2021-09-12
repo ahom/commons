@@ -3,11 +3,9 @@ import { SecurityContext } from "../src/sec";
 describe('SecurityContext', () => {
     test('No active subscription', () => {
         expect(new SecurityContext({}).hasActiveSubscription()).toBeFalsy();
-        expect(new SecurityContext({ subscriptionId: 'lal' }).hasActiveSubscription()).toBeFalsy();
-        expect(new SecurityContext({ subscriptionOwnerId: 'lal' }).hasActiveSubscription()).toBeFalsy();
     });
     test('Active subscription', () => {
-        expect(new SecurityContext({ subscriptionId: 'lal', subscriptionOwnerId: 'lil' }).hasActiveSubscription()).toBeTruthy();
+        expect(new SecurityContext({ subscription: { id: 'lal', ownerId: 'lil', itemId: 'lul' } }).hasActiveSubscription()).toBeTruthy();
     });
     test('No valid user', () => {
         expect(new SecurityContext({}).hasValidUser()).toBeFalsy();
@@ -44,15 +42,21 @@ describe('SecurityContext', () => {
         expect(SecurityContext.fromAuthorizer({
             lambda: {
                 applicationId: 'APP',
-                subscriptionId: 'SUB',
-                subscriptionOwnerId: 'OWN',
+                subscription: {
+                    id: 'SUB',
+                    ownerId: 'OWN',
+                    itemId: 'ITM'
+                },
                 userId: 'USR',
                 scopes: ['SCO']
             }
         }).props).toEqual({
             applicationId: 'APP',
-            subscriptionId: 'SUB',
-            subscriptionOwnerId: 'OWN',
+            subscription: {
+                id: 'SUB',
+                ownerId: 'OWN',
+                itemId: 'ITM'
+            },
             userId: 'USR',
             scopes: ['SCO']
         });
