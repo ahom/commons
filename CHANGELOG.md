@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.9.3](https://www.github.com/Toaztr/commons/compare/v1.9.2...v1.9.3) (2021-09-12)
+
+
+### Bug Fixes
+
+* Adds subscriptionOwnerId in authorizer data ([9a4b84f](https://www.github.com/Toaztr/commons/commit/9a4b84f729b8ed65d5c6f898d23b1eb47a9819ae))
+
 ### [1.9.2](https://www.github.com/Toaztr/commons/compare/v1.9.1...v1.9.2) (2021-09-12)
 
 
