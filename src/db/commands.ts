@@ -77,7 +77,7 @@ export class RetrieveCommand<KeyType = any, ValueType = any> {
         this.key = marshall(key);
     }
 
-    async send(): Promise<ValueType | null> {
+    async send(): Promise<KeyType & ValueType | null> {
         const item = await this.dynamoDBClient.send(new GetItemCommand({
             TableName: this.tableName,
             Key: this.key,
@@ -85,7 +85,7 @@ export class RetrieveCommand<KeyType = any, ValueType = any> {
         }));
 
         if (item?.Item) {
-            return unmarshall(item.Item) as ValueType;
+            return unmarshall(item.Item) as KeyType & ValueType;
         } else {
             return null;
         }
@@ -139,7 +139,7 @@ export class UpdateCommand<KeyType = any, ValueType = any> implements Transactio
         }
     }
 
-    async send(): Promise<ValueType | null> {
+    async send(): Promise<KeyType & ValueType | null> {
         const item = await this.dynamoDBClient.send(new UpdateItemCommand({
             TableName: this.tableName,
             Key: this.key,
@@ -151,7 +151,7 @@ export class UpdateCommand<KeyType = any, ValueType = any> implements Transactio
         }));
 
         if (item?.Attributes) {
-            return unmarshall(item.Attributes) as ValueType;
+            return unmarshall(item.Attributes) as KeyType & ValueType;
         } else {
             return null;
         }
@@ -206,7 +206,7 @@ export class ReplaceCommand<KeyType = any, ValueType = any> implements Transacti
         }
     }
 
-    async send(): Promise<ValueType> {
+    async send(): Promise<KeyType & ValueType> {
         await this.dynamoDBClient.send(new PutItemCommand({
             TableName: this.tableName,
             Item: this.item,
@@ -214,7 +214,7 @@ export class ReplaceCommand<KeyType = any, ValueType = any> implements Transacti
             ExpressionAttributeValues: this.expressionAttributeValues,
             ConditionExpression: this.conditionExpression
         }));
-        return unmarshall(this.item) as ValueType;
+        return unmarshall(this.item) as KeyType & ValueType;
     }
 
     toTransactionItem(): TransactWriteItem {
@@ -372,7 +372,7 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
         }
     }
 
-    async send(): Promise<ListCommandResult<ValueType>> {
+    async send(): Promise<ListCommandResult<KeyType & ValueType>> {
         const results = await this.dynamoDBClient.send(new QueryCommand({
             TableName: this.tableName,
             KeyConditionExpression: this.keyConditionExpression,
@@ -396,7 +396,7 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
                         } : {}
                     )
                 };
-            }) ?? []) as ValueType[]
+            }) ?? []) as (KeyType & ValueType)[]
         };
     }
 }

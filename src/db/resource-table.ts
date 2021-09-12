@@ -35,7 +35,7 @@ export class ResourceTable<H, S, HT, ST, A> {
 
     createCommand(id: string, key: H & S, attributes: A) {
         const now = new Date().toISOString();
-        return new CreateCommand<HT & ST, Resource<A>>(
+        return new CreateCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
             {
@@ -58,7 +58,7 @@ export class ResourceTable<H, S, HT, ST, A> {
     }
 
     retrieveCommand(key: H & S, options?: RetrieveCommandOptions) {
-        return new RetrieveCommand<HT & ST, Resource<A>>(
+        return new RetrieveCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
             {
@@ -70,7 +70,7 @@ export class ResourceTable<H, S, HT, ST, A> {
     }
 
     updateCommand(key: H & S, attributes: A, options?: UpdateCommandOptions) {
-        return new UpdateCommand<HT & ST, Resource<A>>(
+        return new UpdateCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
             {
@@ -100,7 +100,7 @@ export class ResourceTable<H, S, HT, ST, A> {
     }
 
     listCommand(hashKey: H, options?: Omit<ListCommandOptions<ST>, 'indexName'>) {
-        return new ListCommand<HT, ST, Resource<A>>(
+        return new ListCommand<HT, ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
             this.props.hashTransform(hashKey),
