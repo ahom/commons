@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.9.2](https://www.github.com/Toaztr/commons/compare/v1.9.1...v1.9.2) (2021-09-12)
+
+
+### Bug Fixes
+
+* fake release after failed one ([ccedd2c](https://www.github.com/Toaztr/commons/commit/ccedd2c372f9338a4134672509a8ebb638dbbe24))
+
 ### [1.9.1](https://www.github.com/Toaztr/commons/compare/v1.9.0...v1.9.1) (2021-09-12)
 
 
