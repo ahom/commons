@@ -3,9 +3,11 @@ import { SecurityContext } from "../src/sec";
 describe('SecurityContext', () => {
     test('No active subscription', () => {
         expect(new SecurityContext({}).hasActiveSubscription()).toBeFalsy();
+        expect(new SecurityContext({ subscriptionId: 'lal' }).hasActiveSubscription()).toBeFalsy();
+        expect(new SecurityContext({ subscriptionOwnerId: 'lal' }).hasActiveSubscription()).toBeFalsy();
     });
     test('Active subscription', () => {
-        expect(new SecurityContext({ subscriptionId: 'lal' }).hasActiveSubscription()).toBeTruthy();
+        expect(new SecurityContext({ subscriptionId: 'lal', subscriptionOwnerId: 'lil' }).hasActiveSubscription()).toBeTruthy();
     });
     test('No valid user', () => {
         expect(new SecurityContext({}).hasValidUser()).toBeFalsy();
@@ -43,12 +45,14 @@ describe('SecurityContext', () => {
             lambda: {
                 applicationId: 'APP',
                 subscriptionId: 'SUB',
+                subscriptionOwnerId: 'OWN',
                 userId: 'USR',
                 scopes: ['SCO']
             }
         }).props).toEqual({
             applicationId: 'APP',
             subscriptionId: 'SUB',
+            subscriptionOwnerId: 'OWN',
             userId: 'USR',
             scopes: ['SCO']
         });

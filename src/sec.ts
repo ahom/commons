@@ -1,6 +1,7 @@
 export interface AuthorizerContext {
     readonly applicationId?: string,
     readonly subscriptionId?: string,
+    readonly subscriptionOwnerId?: string,
     readonly userId?: string,
     readonly scopes?: string[]
 }
@@ -27,7 +28,7 @@ export class SecurityContext {
     }
 
     hasActiveSubscription(): boolean {
-        return !!this.props.subscriptionId;
+        return !!this.props.subscriptionId && !!this.props.subscriptionOwnerId;
     }
 
     hasValidUser(): boolean {
@@ -38,6 +39,7 @@ export class SecurityContext {
         return new SecurityContext({
             applicationId: authorizer?.lambda?.applicationId,
             subscriptionId: authorizer?.lambda?.subscriptionId,
+            subscriptionOwnerId: authorizer?.lambda?.subscriptionOwnerId,
             userId: authorizer?.lambda?.userId,
             scopes: authorizer?.lambda?.scopes
         });
