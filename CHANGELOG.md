@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.10.1](https://www.github.com/Toaztr/commons/compare/v1.10.0...v1.10.1) (2021-09-18)
+
+
+### Bug Fixes
+
+* upgrade dependencies ([ebdf57b](https://www.github.com/Toaztr/commons/commit/ebdf57b9bb97ea8238bc5183576825ed8fcecadb))
+
 ## [1.10.0](https://www.github.com/Toaztr/commons/compare/v1.9.3...v1.10.0) (2021-09-12)
 
 
