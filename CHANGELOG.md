@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://www.github.com/Toaztr/commons/compare/v1.10.2...v1.11.0) (2021-09-19)
+
+
+### Features
+
+* Adds method to extract the created object from CreateCommand ([95b5ede](https://www.github.com/Toaztr/commons/commit/95b5ede87ff5439f06e95993ce4bb1c44b8398f7))
+
 ### [1.10.2](https://www.github.com/Toaztr/commons/compare/v1.10.1...v1.10.2) (2021-09-18)
 
 
