@@ -47,6 +47,10 @@ export class CreateCommand<KeyType = any, ValueType = any> implements Transactio
             Item: this.item,
             ConditionExpression: this.conditionExpression
         }));
+        return this.data();
+    }
+
+    data() {
         return unmarshall(this.item) as ValueType;
     }
 
