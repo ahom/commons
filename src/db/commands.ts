@@ -1,7 +1,7 @@
 import { DynamoDBClient, GetItemCommand, PutItemCommand, DeleteItemCommand, UpdateItemCommand, TransactWriteItemsCommand, TransactWriteItem, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 
-interface TransactionItemCompatibleCommand {
+export interface TransactionItemCompatibleCommand {
     toTransactionItem(): TransactWriteItem
 }
 
