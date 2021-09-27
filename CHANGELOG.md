@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.11.1](https://www.github.com/Toaztr/commons/compare/v1.11.0...v1.11.1) (2021-09-27)
+
+
+### Bug Fixes
+
+* export TransactionItemCompatibleCommand interface ([4d524a2](https://www.github.com/Toaztr/commons/commit/4d524a25e1034d465db224f751823e2eab3da701))
+
 ## [1.11.0](https://www.github.com/Toaztr/commons/compare/v1.10.2...v1.11.0) (2021-09-19)
 
 
