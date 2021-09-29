@@ -1,4 +1,36 @@
-import { SecurityContext } from "../src/sec";
+import { filterScope, filterScopes, isScopeIncludedIn, SecurityContext } from "../src/sec";
+
+describe('Scopes', () => {
+    test('Scope not included', () => {
+        expect(isScopeIncludedIn('lol', 'lil')).toBeFalsy();
+        expect(isScopeIncludedIn('lol', 'loli')).toBeFalsy();
+        expect(isScopeIncludedIn('lol', 'lo')).toBeFalsy();
+        expect(isScopeIncludedIn('lol', 'lol/*')).toBeFalsy();
+        expect(isScopeIncludedIn('lol', 'lo/*')).toBeFalsy();
+        // we do not allow stars in the middle, only at the end
+        expect(isScopeIncludedIn('lol', 'l*l*')).toBeFalsy();
+    });
+    test('Scope included', () => {
+        expect(isScopeIncludedIn('lol', 'lol')).toBeTruthy();
+        expect(isScopeIncludedIn('lol', 'lo*')).toBeTruthy();
+        expect(isScopeIncludedIn('lol', 'l*')).toBeTruthy();
+        expect(isScopeIncludedIn('lol', '*')).toBeTruthy();
+    });
+    test('Scope filtered', () => {
+        expect(filterScope('lol', 'lil')).toBeUndefined();
+        expect(filterScope('lol', 'lol')).toEqual('lol');
+        expect(filterScope('lol', 'lo*')).toEqual('lol');
+        expect(filterScope('lo*', 'lol')).toEqual('lol');
+    });
+    test('Scopes filtered', () => {
+        expect(filterScopes(
+            ['lol', 'lil', 'lul', 'lo*'],
+            ['lo*', 'lil']
+        )).toEqual(
+            ['lol', 'lil', 'lo*']
+        )
+    });
+});
 
 describe('SecurityContext', () => {
     test('No active subscription', () => {
