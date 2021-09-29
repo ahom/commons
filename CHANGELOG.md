@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://www.github.com/Toaztr/commons/compare/v1.11.1...v1.12.0) (2021-09-29)
+
+
+### Features
+
+* Adds scopes functions for inclusion test and filtering ([e8389f9](https://www.github.com/Toaztr/commons/commit/e8389f969aab0a0681ea02d7a20b37805dcab4ec))
+
 ### [1.11.1](https://www.github.com/Toaztr/commons/compare/v1.11.0...v1.11.1) (2021-09-27)
 
 
