@@ -14,20 +14,7 @@ export class SecurityContext {
 
     isScopeAuthorized(scopeName: string): boolean {
         if (!this.props.scopes) return false;
-
-        for (let authorizedScope of this.props.scopes) {
-            if (authorizedScope.endsWith('*')) {
-                if (scopeName.startsWith(authorizedScope.substring(0, authorizedScope.length - 1))) {
-                    return true;
-                }
-            } else {
-                if (scopeName === authorizedScope) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return this.props.scopes.some(authorizedScope => isScopeIncludedIn(scopeName, authorizedScope));
     }
 
     hasActiveSubscription(): boolean {
@@ -46,4 +33,23 @@ export class SecurityContext {
             scopes: authorizer?.lambda?.scopes
         });
     }
+}
+
+export function isScopeIncludedIn(scope: string, referenceScope: string): boolean {
+    return (
+        referenceScope.endsWith('*') && scope.startsWith(referenceScope.substring(0, referenceScope.length - 1))
+    ) || (scope === referenceScope);
+}
+
+export function filterScope(scope: string, filteringScope: string): string | undefined {
+    return isScopeIncludedIn(scope, filteringScope) ? scope : (
+        isScopeIncludedIn(filteringScope, scope) ? filteringScope : undefined
+    );
+}
+
+export function filterScopes(scopes: string[], filteringScopes: string[]): string[] {
+    return scopes.flatMap(scope => filteringScopes.map(
+            filteringScope => filterScope(scope, filteringScope)
+        ).filter(scope => !!scope)
+    );
 }
