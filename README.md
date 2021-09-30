@@ -1,3 +1,3 @@
 # @toaztr/commons
 
-Common utils used across toaztr microservices
+Common utils used across Toaztr microservices
