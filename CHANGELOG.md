@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.12.1](https://www.github.com/Toaztr/commons/compare/v1.12.0...v1.12.1) (2021-09-30)
+
+
+### Bug Fixes
+
+* Cosmetics of README and several fixes in CI ([fcd33eb](https://www.github.com/Toaztr/commons/commit/fcd33eb426bfa4a421cb849b9627363593277274))
+
 ## [1.12.0](https://www.github.com/Toaztr/commons/compare/v1.11.1...v1.12.0) (2021-09-29)
 
 
