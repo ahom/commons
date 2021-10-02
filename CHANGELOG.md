@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://www.github.com/Toaztr/commons/compare/v1.13.0...v1.14.0) (2021-10-02)
+
+
+### Features
+
+* module interop ([03ac6e4](https://www.github.com/Toaztr/commons/commit/03ac6e412e90a7cb4eb834d0f2b30c9cce69f669))
+
 ## [1.13.0](https://www.github.com/Toaztr/commons/compare/v1.12.0...v1.13.0) (2021-10-02)
 
 
