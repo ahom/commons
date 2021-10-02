@@ -5,6 +5,7 @@
     "outDir": "dist",
     "lib": ["ES2020", "dom"],
     "declaration": true,
+    "esModuleInterop": true,
     "target": "ES2020"
   }
 }
