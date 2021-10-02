@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.13.0](https://www.github.com/Toaztr/commons/compare/v1.12.0...v1.13.0) (2021-10-02)
+
+
+### Features
+
+* Adds openapi-client for e2e tests ([75a0828](https://www.github.com/Toaztr/commons/commit/75a0828e18be813a80a1003b9d114027ae688472))
+
+
+### Bug Fixes
+
+* Cosmetics of README and several fixes in CI ([fcd33eb](https://www.github.com/Toaztr/commons/commit/fcd33eb426bfa4a421cb849b9627363593277274))
+* **deps:** pin dependencies ([d34a21d](https://www.github.com/Toaztr/commons/commit/d34a21d7eb9150b693203d9275d5831cf11dce29))
+
 ## [1.12.0](https://www.github.com/Toaztr/commons/compare/v1.11.1...v1.12.0) (2021-09-29)
 
 
