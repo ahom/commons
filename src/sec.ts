@@ -6,6 +6,7 @@ export interface AuthorizerContext {
         itemId: string
     }
     userId?: string,
+    email?: string,
     scopes?: string[]
 }
 
@@ -30,6 +31,7 @@ export class SecurityContext {
             applicationId: authorizer?.lambda?.applicationId,
             subscription: authorizer?.lambda?.subscription,
             userId: authorizer?.lambda?.userId,
+            email: authorizer?.lambda?.email,
             scopes: authorizer?.lambda?.scopes
         });
     }
