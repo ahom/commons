@@ -80,6 +80,7 @@ describe('SecurityContext', () => {
                     itemId: 'ITM'
                 },
                 userId: 'USR',
+                email: 'YEP',
                 scopes: ['SCO']
             }
         }).props).toEqual({
@@ -90,6 +91,7 @@ describe('SecurityContext', () => {
                 itemId: 'ITM'
             },
             userId: 'USR',
+            email: 'YEP',
             scopes: ['SCO']
         });
     });
