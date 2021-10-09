@@ -29,14 +29,24 @@ export function postResource<H, S, HT, ST, A>(props: {
     overrideFields?: (r: HttpRequest, data: any) => any
 }): HttpRequestAsyncFunc {
     return async (r: HttpRequest) => {
-        const value = await postResourceCommand(r, props).send();
-        return {
-            statusCode: 201,
-            headers: {
-                ETag: value.meta.etag
-            },
-            data: filterResourceFields(value)
-        };
+        try {
+            const value = await postResourceCommand(r, props).send();
+            return {
+                statusCode: 201,
+                headers: {
+                    ETag: value.meta.etag
+                },
+                data: filterResourceFields(value)
+            };
+        } catch (err) {
+            if (err.name === 'ConditionalCheckFailedException') {
+                console.info(err);
+                return {
+                    statusCode: 409
+                }; 
+            }
+            throw err;
+        }
     };
 }
 
