@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://www.github.com/Toaztr/commons/compare/v1.14.1...v1.15.0) (2021-10-09)
+
+
+### Features
+
+* Adds email to AuthorizerContext ([0df3163](https://www.github.com/Toaztr/commons/commit/0df31633115be0f32eece6afa5578551a07a3b19))
+
 ### [1.14.1](https://www.github.com/Toaztr/commons/compare/v1.14.0...v1.14.1) (2021-10-09)
 
 
