@@ -1,4 +1,4 @@
-import { DynamoDBClient, GetItemCommand, PutItemCommand, DeleteItemCommand, UpdateItemCommand, TransactWriteItemsCommand, TransactWriteItem, QueryCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, GetItemCommand, PutItemCommand, DeleteItemCommand, UpdateItemCommand, TransactWriteItemsCommand, TransactWriteItem, QueryCommand, AttributeValue, BatchWriteItemCommand } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 
 export interface TransactionItemCompatibleCommand {
@@ -62,6 +62,58 @@ export class CreateCommand<KeyType = any, ValueType = any> implements Transactio
                 ConditionExpression: this.conditionExpression
             }
         }
+    }
+}
+
+export class BatchWriteCommand<KeyType = any, ValueType = any> {
+    readonly batches: any[][] = [];
+
+    constructor(
+        readonly dynamoDBClient: DynamoDBClient,
+        readonly tableName: string,
+        records: {
+            key: KeyType,
+            value: ValueType
+        }[]
+    ) {
+        let longListItems = records.map(
+            r => marshall({ ...r.value, ...r.key }, { removeUndefinedValues: true })
+        );
+        
+        while (longListItems.length > 0) {
+            this.batches.push(longListItems.splice(0, 25));
+        }
+    }
+
+    private async sendWithRetries(requestItems: any, retryLeft: number, backoffMs: number) {
+        if (retryLeft <= 0) {
+            throw new Error('Could not complete BatchWrite after exhausting all retries');
+        }
+
+        const res = await this.dynamoDBClient.send(new BatchWriteItemCommand({
+            RequestItems: requestItems
+        }));
+
+        if (res.UnprocessedItems?.[this.tableName]?.length > 0) {
+            await new Promise((resolve) => setTimeout(resolve, backoffMs));
+            return this.sendWithRetries(res.UnprocessedItems, retryLeft - 1, backoffMs * 2);
+        }
+
+        return res;
+    }
+
+    async send() {
+        return await Promise.all(this.batches.map(
+            batch => this.sendWithRetries({
+                [this.tableName]: batch.map(
+                    item => ({
+                        PutRequest: {
+                            Item: item
+                        }
+                    })
+                )
+            }, 5, 10)
+        ));
     }
 }
 

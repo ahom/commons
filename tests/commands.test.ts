@@ -3,17 +3,19 @@ process.env.AWS_REGION = 'LOCAL'
 import { mocked } from 'ts-jest/utils';
 jest.mock('@aws-sdk/client-dynamodb');
 
-import { DynamoDBClient, PutItemCommand, GetItemCommand, DeleteItemCommand, UpdateItemCommand, QueryCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, PutItemCommand, GetItemCommand, DeleteItemCommand, UpdateItemCommand, QueryCommand, BatchWriteItemCommand } from '@aws-sdk/client-dynamodb';
 const mockedPutItemCommand = mocked(PutItemCommand);
+const mockedBatchWriteItemCommand = mocked(BatchWriteItemCommand);
 const mockedUpdateItemCommand = mocked(UpdateItemCommand);
 const mockedGetItemCommand = mocked(GetItemCommand);
 const mockedDeleteItemCommand = mocked(DeleteItemCommand);
 const mockedQueryCommand = mocked(QueryCommand);
 const mockedDynamoDBClient = mocked(DynamoDBClient, true);
 
-import { CreateCommand, DeleteCommand, RetrieveCommand, UpdateCommand, ReplaceCommand, ListCommand } from '../src/db/commands';
+import { CreateCommand, DeleteCommand, RetrieveCommand, UpdateCommand, ReplaceCommand, ListCommand, BatchWriteCommand } from '../src/db/commands';
 
 const dynamoDBClient = new DynamoDBClient({});
+const mockedSend = mocked(dynamoDBClient.send);
 
 describe('CreateCommand', () => {
     test('Sends right command to DynamoDBClient', () => {
@@ -47,6 +49,141 @@ describe('CreateCommand', () => {
                     ConditionExpression: 'attribute_not_exists(id)'
                 })
             );
+        });
+    });
+});
+
+describe('BatchWriteCommand', () => {
+    test('Sends right command to DynamoDBClient', () => {
+        mockedSend.mockImplementationOnce(() => ({
+            UnprocessedItems: []
+        }));
+        return new BatchWriteCommand(
+            dynamoDBClient,
+            'table', 
+            [
+                {
+                    key: {
+                        id: '123'
+                    }, 
+                    value: {
+                        id: 'OVERWRITTEN',
+                        value: 'lol'
+                    }
+                },
+                {
+                    key: {
+                        id: '234'
+                    }, 
+                    value: {
+                        value: 'lil'
+                    }
+                },
+
+            ]
+        ).send().then(data => {
+            expect(mockedBatchWriteItemCommand).toBeCalledWith(
+                expect.objectContaining({
+                    RequestItems: {
+                        table: [
+                            {
+                                PutRequest: {
+                                    Item: {
+                                        id: {
+                                            S: '123'
+                                        },
+                                        value: {
+                                            S: 'lol'
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                PutRequest: {
+                                    Item: {
+                                        id: {
+                                            S: '234'
+                                        },
+                                        value: {
+                                            S: 'lil'
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                })
+            );
+        });
+    });
+    test('Properly split big arrays of items', () => {
+        mockedBatchWriteItemCommand.mockClear();
+        mockedSend.mockImplementation(() => ({
+            UnprocessedItems: []
+        }));
+        return new BatchWriteCommand(
+            dynamoDBClient,
+            'table', 
+            Array(52).fill({
+                key: {
+                    id: '123'
+                }, 
+                value: {
+                    value: 'lol'
+                }
+            })
+        ).send().then(data => {
+            mockedSend.mockClear();
+            expect(mockedBatchWriteItemCommand.mock.calls).toEqual([
+                [{
+                    RequestItems: {
+                        table: Array(25).fill({
+                            PutRequest: {
+                                Item: {
+                                    id: {
+                                        S: '123'
+                                    },
+                                    value: {
+                                        S: 'lol'
+                                    }
+                                }
+                            }
+                        })
+                    }
+                }],
+                [{
+                    RequestItems: {
+                        table: Array(25).fill({
+                            PutRequest: {
+                                Item: {
+                                    id: {
+                                        S: '123'
+                                    },
+                                    value: {
+                                        S: 'lol'
+                                    }
+                                }
+                            }
+                        })
+                    }
+                }],
+                [{
+                    RequestItems: {
+                        table: Array(2).fill({
+                            PutRequest: {
+                                Item: {
+                                    id: {
+                                        S: '123'
+                                    },
+                                    value: {
+                                        S: 'lol'
+                                    }
+                                }
+                            }
+                        })
+                    }
+                }]
+            ]);
         });
     });
 });
