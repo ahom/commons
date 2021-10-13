@@ -1,7 +1,8 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { IndexProps } from './index';
 import { uuid } from '../utils';
-import { UpdateCommandOptions, DeleteCommandOptions, ListCommandOptions, CreateCommand, RetrieveCommand, UpdateCommand, DeleteCommand, ListCommand, RetrieveCommandOptions } from './commands';
+import { UpdateCommandOptions, DeleteCommandOptions, ListCommandOptions, CreateCommand, RetrieveCommand, UpdateCommand, DeleteCommand, ListCommand, RetrieveCommandOptions, BatchWriteCommand } from './commands';
+import { STATUS_CODES } from 'http';
 
 export interface Resource<AttributesType extends Object> {
     readonly id: string,
@@ -54,6 +55,28 @@ export class ResourceTable<H, S, HT, ST, A> {
                     last_updated_at: now
                 }
             }
+        );
+    }
+
+    batchWriteCommand(items: {id: string, key: H & S, attributes: A}[]) {
+        return new BatchWriteCommand<HT & ST, H & S & Resource<A>>(
+            this.dynamoDBClient,
+            this.tableName,
+            items.map(
+                item => ({
+                    key: {
+                        ...this.props.sortTransform(item.key),
+                        ...this.props.hashTransform(item.key)
+                    },
+                    value: {
+                        ...item.key,
+                        ...(this.props.transform ? this.props.transform(item.key, item.attributes) : {}),
+                        id: item.id,
+                        type: this.resourceType,
+                        attributes: item.attributes
+                    }
+                })
+            )
         );
     }
 
