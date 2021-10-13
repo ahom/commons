@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.16.0](https://www.github.com/Toaztr/commons/compare/v1.15.0...v1.16.0) (2021-10-13)
+
+
+### Features
+
+* BatchWriteItem ([b83924a](https://www.github.com/Toaztr/commons/commit/b83924a99eb81722e824b841ac06fe6b09ed2b84))
+
+
+### Bug Fixes
+
+* meta in BatchWriteItem ([f4fd2cb](https://www.github.com/Toaztr/commons/commit/f4fd2cbe4f0e8ece472135216bc438539d289320))
+
 ## [1.15.0](https://www.github.com/Toaztr/commons/compare/v1.14.1...v1.15.0) (2021-10-09)
 
 
