@@ -165,11 +165,38 @@ export class ResourceTableBuilder<H, S, HT, ST, A> {
             this.tableName,
             this.resourceType,
             {
+                ...this.props,
+                transform: undefined,
                 hashTransform: hashTransform,
                 sortTransform: sortTransform
             }
         );
     }
+
+    withoutIncludedMeta() {
+        return new ResourceTableBuilder<H, S, HT, ST, A>(
+            this.dynamoDBClient,
+            this.tableName,
+            this.resourceType,
+            {
+                ...this.props,
+                doNotIncludeMeta: true
+            }
+        );
+    }
+
+    withoutIncludedKeys() {
+        return new ResourceTableBuilder<H, S, HT, ST, A>(
+            this.dynamoDBClient,
+            this.tableName,
+            this.resourceType,
+            {
+                ...this.props,
+                doNotIncludeKeys: true
+            }
+        );
+    }
+
 
     withTransform(
         transform: (key: H & S, attr: A) => any
@@ -179,8 +206,7 @@ export class ResourceTableBuilder<H, S, HT, ST, A> {
             this.tableName,
             this.resourceType,
             {
-                hashTransform: this.props.hashTransform,
-                sortTransform: this.props.sortTransform,
+                ...this.props,
                 transform
             }
         );
