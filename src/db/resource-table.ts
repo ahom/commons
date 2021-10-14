@@ -2,7 +2,6 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { IndexProps } from './index';
 import { uuid } from '../utils';
 import { UpdateCommandOptions, DeleteCommandOptions, ListCommandOptions, CreateCommand, RetrieveCommand, UpdateCommand, DeleteCommand, ListCommand, RetrieveCommandOptions, BatchWriteCommand } from './commands';
-import { STATUS_CODES } from 'http';
 
 export interface Resource<AttributesType extends Object> {
     readonly id: string,
@@ -23,7 +22,9 @@ export function filterResourceFields<AttributesType extends Object>(rsc: Resourc
 }
 
 export interface ResourceTableProps<H, S, HT, ST, A> extends IndexProps<H, S, HT, ST> {
-    transform?: (key: H & S, attr: A) => any
+    transform?: (key: H & S, attr: A) => any,
+    doNotIncludeMeta?: boolean,
+    doNotIncludeKeys?: boolean
 }
 
 export class ResourceTable<H, S, HT, ST, A> {
@@ -44,16 +45,18 @@ export class ResourceTable<H, S, HT, ST, A> {
                 ...this.props.hashTransform(key)
             },
             {
-                ...key,
+                ...(this.props.doNotIncludeKeys ? {} : key),
                 ...(this.props.transform ? this.props.transform(key, attributes) : {}),
                 id: id, 
                 type: this.resourceType,
                 attributes: attributes,
-                meta: {
-                    etag: `"${uuid()}"`,
-                    created_at: now,
-                    last_updated_at: now
-                }
+                ...(this.props.doNotIncludeMeta ? {} : {
+                    meta: {
+                        etag: `"${uuid()}"`,
+                        created_at: now,
+                        last_updated_at: now
+                    }
+                })
             }
         );
     }
@@ -70,16 +73,18 @@ export class ResourceTable<H, S, HT, ST, A> {
                         ...this.props.hashTransform(item.key)
                     },
                     value: {
-                        ...item.key,
+                        ...(this.props.doNotIncludeKeys ? {} : item.key),
                         ...(this.props.transform ? this.props.transform(item.key, item.attributes) : {}),
                         id: item.id,
                         type: this.resourceType,
                         attributes: item.attributes,
-                        meta: {
-                            etag: `"${uuid()}"`,
-                            created_at: now,
-                            last_updated_at: now
-                        }
+                        ...(this.props.doNotIncludeMeta ? {} : {
+                            meta: {
+                                etag: `"${uuid()}"`,
+                                created_at: now,
+                                last_updated_at: now
+                            }
+                        })
                     }
                 })
             )
@@ -109,8 +114,10 @@ export class ResourceTable<H, S, HT, ST, A> {
             {
                 ...(this.props.transform ? this.props.transform(key, attributes) : {}),
                 attributes,
-                'meta.last_updated_at': new Date().toISOString(),
-                'meta.etag': `"${uuid()}`
+                ...(this.props.doNotIncludeMeta ? {} : {
+                    'meta.last_updated_at': new Date().toISOString(),
+                    'meta.etag': `"${uuid()}`
+                })
             }, 
             options
       );
