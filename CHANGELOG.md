@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.17.1](https://www.github.com/Toaztr/commons/compare/v1.17.0...v1.17.1) (2021-10-14)
+
+
+### Bug Fixes
+
+* Adds options ([028622b](https://www.github.com/Toaztr/commons/commit/028622b37773d1b5ae5c3a7f51a63da380061568))
+
 ## [1.17.0](https://www.github.com/Toaztr/commons/compare/v1.16.0...v1.17.0) (2021-10-14)
 
 
