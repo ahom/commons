@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://www.github.com/Toaztr/commons/compare/v1.16.0...v1.17.0) (2021-10-14)
+
+
+### Features
+
+* do not include meta or keys ([15afcd3](https://www.github.com/Toaztr/commons/commit/15afcd36cda8a4b4c4270e34b8465cc712b64070))
+
 ## [1.16.0](https://www.github.com/Toaztr/commons/compare/v1.15.0...v1.16.0) (2021-10-13)
 
 
