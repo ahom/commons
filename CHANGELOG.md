@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://www.github.com/Toaztr/commons/compare/v1.19.0...v1.20.0) (2021-10-18)
+
+
+### Features
+
+* Remove type from resources ([a3a9ebf](https://www.github.com/Toaztr/commons/commit/a3a9ebf8cffb4aeabbb668b16e2725a7fef72f83))
+
 ## [1.19.0](https://www.github.com/Toaztr/commons/compare/v1.18.0...v1.19.0) (2021-10-18)
 
 
