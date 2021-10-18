@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://www.github.com/Toaztr/commons/compare/v1.17.1...v1.18.0) (2021-10-18)
+
+
+### Features
+
+* Upgrades of dependencies ([4e072d6](https://www.github.com/Toaztr/commons/commit/4e072d60de5fb56210e1ded9b184c9957d2eec07))
+
 ### [1.17.1](https://www.github.com/Toaztr/commons/compare/v1.17.0...v1.17.1) (2021-10-14)
 
 
