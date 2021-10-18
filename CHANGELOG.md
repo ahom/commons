@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://www.github.com/Toaztr/commons/compare/v1.18.0...v1.19.0) (2021-10-18)
+
+
+### Features
+
+* Adds ttl optional field in creates and updates for resource tables ([13bd830](https://www.github.com/Toaztr/commons/commit/13bd830ee809f24292418277201dfd0596e9a840))
+
 ## [1.18.0](https://www.github.com/Toaztr/commons/compare/v1.17.1...v1.18.0) (2021-10-18)
 
 
