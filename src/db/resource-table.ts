@@ -35,57 +35,52 @@ export class ResourceTable<H, S, HT, ST, A> {
         private readonly props: ResourceTableProps<H, S, HT, ST, A>
     ) {}
 
-    createCommand(id: string, key: H & S, attributes: A) {
+    buildKey(key: H & S): HT & ST {
+        return {
+            ...this.props.sortTransform(key),
+            ...this.props.hashTransform(key)
+        }
+    }
+
+    buildItem(id: string, key: H & S, attributes: A, ttl?: Date) {
         const now = new Date().toISOString();
+        return {
+            ...(this.props.doNotIncludeKeys ? {} : key),
+            ...(this.props.transform ? this.props.transform(key, attributes) : {}),
+            id: id, 
+            type: this.resourceType,
+            attributes: attributes,
+            ...(this.props.doNotIncludeMeta ? {} : {
+                meta: {
+                    etag: `"${uuid()}"`,
+                    created_at: now,
+                    last_updated_at: now
+                }
+            }),
+            ...(ttl ? {
+                ttl: Math.ceil(ttl.getTime() / 1000)
+            } : {})
+        };
+    }
+
+    createCommand(id: string, key: H & S, attributes: A, ttl?: Date) {
         return new CreateCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
-            {
-                ...this.props.sortTransform(key),
-                ...this.props.hashTransform(key)
-            },
-            {
-                ...(this.props.doNotIncludeKeys ? {} : key),
-                ...(this.props.transform ? this.props.transform(key, attributes) : {}),
-                id: id, 
-                type: this.resourceType,
-                attributes: attributes,
-                ...(this.props.doNotIncludeMeta ? {} : {
-                    meta: {
-                        etag: `"${uuid()}"`,
-                        created_at: now,
-                        last_updated_at: now
-                    }
-                })
-            }
+            this.buildKey(key),
+            this.buildItem(id, key, attributes, ttl)
         );
     }
 
-    batchWriteCommand(items: {id: string, key: H & S, attributes: A}[]) {
+    batchWriteCommand(items: {id: string, key: H & S, attributes: A, ttl?: Date}[]) {
         const now = new Date().toISOString();
         return new BatchWriteCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
             items.map(
                 item => ({
-                    key: {
-                        ...this.props.sortTransform(item.key),
-                        ...this.props.hashTransform(item.key)
-                    },
-                    value: {
-                        ...(this.props.doNotIncludeKeys ? {} : item.key),
-                        ...(this.props.transform ? this.props.transform(item.key, item.attributes) : {}),
-                        id: item.id,
-                        type: this.resourceType,
-                        attributes: item.attributes,
-                        ...(this.props.doNotIncludeMeta ? {} : {
-                            meta: {
-                                etag: `"${uuid()}"`,
-                                created_at: now,
-                                last_updated_at: now
-                            }
-                        })
-                    }
+                    key: this.buildKey(item.key),
+                    value: this.buildItem(item.id, item.key, item.attributes, item.ttl)
                 })
             )
         );
@@ -95,29 +90,26 @@ export class ResourceTable<H, S, HT, ST, A> {
         return new RetrieveCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
-            {
-                ...this.props.sortTransform(key),
-                ...this.props.hashTransform(key)
-            },
+            this.buildKey(key),
             options
         );
     }
 
-    updateCommand(key: H & S, attributes: A, options?: UpdateCommandOptions) {
+    updateCommand(key: H & S, attributes: A, options?: UpdateCommandOptions, ttl?: Date) {
         return new UpdateCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
-            {
-                ...this.props.sortTransform(key),
-                ...this.props.hashTransform(key)
-            },
+            this.buildKey(key),
             {
                 ...(this.props.transform ? this.props.transform(key, attributes) : {}),
-                attributes,
+                attributes: attributes,
                 ...(this.props.doNotIncludeMeta ? {} : {
                     'meta.last_updated_at': new Date().toISOString(),
                     'meta.etag': `"${uuid()}`
-                })
+                }),
+                ...(ttl ? {
+                    ttl: Math.ceil(ttl.getTime() / 1000)
+                } : {})
             }, 
             options
       );
@@ -127,10 +119,7 @@ export class ResourceTable<H, S, HT, ST, A> {
         return new DeleteCommand(
             this.dynamoDBClient,
             this.tableName,
-            {
-                ...this.props.sortTransform(key),
-                ...this.props.hashTransform(key)
-            },
+            this.buildKey(key),
             options
         );
     }
