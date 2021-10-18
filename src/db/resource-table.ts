@@ -5,7 +5,6 @@ import { UpdateCommandOptions, DeleteCommandOptions, ListCommandOptions, CreateC
 
 export interface Resource<AttributesType extends Object> {
     readonly id: string,
-    readonly type: string,
     readonly attributes: AttributesType,
     readonly meta: { 
         readonly etag: string,
@@ -15,9 +14,9 @@ export interface Resource<AttributesType extends Object> {
 }
 
 export function filterResourceFields<AttributesType extends Object>(rsc: Resource<AttributesType>) {
-    const { id, type, attributes, meta, ...rest } = rsc;
+    const { id, attributes, meta, ...rest } = rsc;
     return {
-        id, type, attributes, meta
+        id, attributes, meta
     };
 }
 
@@ -31,7 +30,6 @@ export class ResourceTable<H, S, HT, ST, A> {
     constructor(
         private readonly dynamoDBClient: DynamoDBClient,
         public readonly tableName: string,
-        public readonly resourceType: string,
         private readonly props: ResourceTableProps<H, S, HT, ST, A>
     ) {}
 
@@ -48,7 +46,6 @@ export class ResourceTable<H, S, HT, ST, A> {
             ...(this.props.doNotIncludeKeys ? {} : key),
             ...(this.props.transform ? this.props.transform(key, attributes) : {}),
             id: id, 
-            type: this.resourceType,
             attributes: attributes,
             ...(this.props.doNotIncludeMeta ? {} : {
                 meta: {
@@ -138,7 +135,6 @@ export class ResourceTableBuilder<H, S, HT, ST, A> {
     constructor(
         private readonly dynamoDBClient: DynamoDBClient,
         private readonly tableName: string,
-        private readonly resourceType: string,
         private readonly props: ResourceTableProps<H, S, HT, ST, A>
     ) {}
 
@@ -152,7 +148,6 @@ export class ResourceTableBuilder<H, S, HT, ST, A> {
         return new ResourceTableBuilder<NH, NS, HT, ST, A>(
             this.dynamoDBClient,
             this.tableName,
-            this.resourceType,
             {
                 ...this.props,
                 transform: undefined,
@@ -166,7 +161,6 @@ export class ResourceTableBuilder<H, S, HT, ST, A> {
         return new ResourceTableBuilder<H, S, HT, ST, A>(
             this.dynamoDBClient,
             this.tableName,
-            this.resourceType,
             {
                 ...this.props,
                 doNotIncludeMeta: true
@@ -178,7 +172,6 @@ export class ResourceTableBuilder<H, S, HT, ST, A> {
         return new ResourceTableBuilder<H, S, HT, ST, A>(
             this.dynamoDBClient,
             this.tableName,
-            this.resourceType,
             {
                 ...this.props,
                 doNotIncludeKeys: true
@@ -193,7 +186,6 @@ export class ResourceTableBuilder<H, S, HT, ST, A> {
         return new ResourceTableBuilder<H, S, HT, ST, A>(
             this.dynamoDBClient,
             this.tableName,
-            this.resourceType,
             {
                 ...this.props,
                 transform
@@ -205,7 +197,6 @@ export class ResourceTableBuilder<H, S, HT, ST, A> {
         return new ResourceTable<H, S, HT, ST, A>(
             this.dynamoDBClient,
             this.tableName,
-            this.resourceType,
             this.props
         );
     }
@@ -213,13 +204,11 @@ export class ResourceTableBuilder<H, S, HT, ST, A> {
 
 export function resourceTable<H, S, A = Object>(
     dynamoDBClient: DynamoDBClient,
-    tableName: string,
-    resourceType: string
+    tableName: string
 ) {
     return new ResourceTableBuilder<H, S, H, S, A>(
         dynamoDBClient,
         tableName,
-        resourceType,
         {
             hashTransform: x => x,
             sortTransform: x => x

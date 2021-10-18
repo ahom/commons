@@ -16,8 +16,7 @@ const mockedSend = mocked(dynamoDBClient.send);
 
 const table = resourceTable<{ id: string }, { sort: string }>(
     dynamoDBClient,
-    'table',
-    'RSC'
+    'table'
 ).build();
 const tableIndex = index<{ id: string }, { sort: string }>(
     dynamoDBClient,
@@ -104,7 +103,6 @@ describe('PostResource', () => {
                 expect(data.body).toBeTruthy();
                 const obj = JSON.parse(data.body!);
                 expect(obj.data).toMatchObject({
-                    type: 'RSC',
                     attributes: {
                         postal_code: '06600'
                     }
@@ -141,7 +139,6 @@ describe('PostResource', () => {
                 expect(data.body).toBeTruthy();
                 const obj = JSON.parse(data.body!);
                 expect(obj.data).toMatchObject({
-                    type: 'RSC',
                     attributes: {
                         postal_code: '1',
                         city: 'Antibes'
