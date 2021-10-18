@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.20.1](https://www.github.com/Toaztr/commons/compare/v1.20.0...v1.20.1) (2021-10-18)
+
+
+### Bug Fixes
+
+* re-trigger release ([1737af4](https://www.github.com/Toaztr/commons/commit/1737af49790bfc4083c52fc20b28b3a7406bb6a5))
+
 ## [1.20.0](https://www.github.com/Toaztr/commons/compare/v1.19.0...v1.20.0) (2021-10-18)
 
 
