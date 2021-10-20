@@ -1,7 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { IndexProps } from './index';
 import { uuid } from '../utils';
-import { UpdateCommandOptions, DeleteCommandOptions, ListCommandOptions, CreateCommand, RetrieveCommand, UpdateCommand, DeleteCommand, ListCommand, RetrieveCommandOptions, BatchWriteCommand } from './commands';
+import { UpdateCommandOptions, DeleteCommandOptions, ListCommandOptions, CreateCommand, RetrieveCommand, UpdateCommand, DeleteCommand, ListCommand, RetrieveCommandOptions, BatchWriteCommand, FullScanCommandOptions, FullScanCommand } from './commands';
 
 export interface Resource<AttributesType extends Object> {
     readonly id: string,
@@ -126,6 +126,14 @@ export class ResourceTable<H, S, HT, ST, A> {
             this.dynamoDBClient,
             this.tableName,
             this.props.hashTransform(hashKey),
+            options
+        );
+    }
+
+    fullScanCommand(options?: FullScanCommandOptions) {
+        return new FullScanCommand<HT, ST, H & S & Resource<A>>(
+            this.dynamoDBClient,
+            this.tableName,
             options
         );
     }
