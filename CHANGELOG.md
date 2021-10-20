@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.21.1](https://www.github.com/Toaztr/commons/compare/v1.21.0...v1.21.1) (2021-10-20)
+
+
+### Bug Fixes
+
+* Adds fullScanCommand in resource-table ([c462d1d](https://www.github.com/Toaztr/commons/commit/c462d1ddc5944b2e0e48f15cd09513d6d815b4a4))
+
 ## [1.21.0](https://www.github.com/Toaztr/commons/compare/v1.20.1...v1.21.0) (2021-10-20)
 
 
