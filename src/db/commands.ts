@@ -1,4 +1,4 @@
-import { DynamoDBClient, GetItemCommand, PutItemCommand, DeleteItemCommand, UpdateItemCommand, TransactWriteItemsCommand, TransactWriteItem, QueryCommand, AttributeValue, BatchWriteItemCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, GetItemCommand, PutItemCommand, DeleteItemCommand, UpdateItemCommand, TransactWriteItemsCommand, TransactWriteItem, QueryCommand, AttributeValue, BatchWriteItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 
 export interface TransactionItemCompatibleCommand {
@@ -438,6 +438,52 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
             ScanIndexForward: this.ascendingScan,
             IndexName: this.indexName,
             Limit: this.limit
+        }));
+
+        return {
+            count: results?.Count ?? 0,
+            cursor: results?.LastEvaluatedKey,
+            items: (results?.Items?.map((item) => unmarshall(item)).map((item) => {
+                return {
+                    ...item,
+                    ...(
+                        (item.projections && !item.attributes) ? {
+                            attributes: item.projections
+                        } : {}
+                    )
+                };
+            }) ?? []) as (KeyType & ValueType)[]
+        };
+    }
+}
+
+export interface ScanCommandResult<ValueType = any> {
+    readonly count: number,
+    readonly cursor?: any,
+    readonly items: ValueType[]
+}
+
+export interface ScanCommandOptions {
+    readonly from?: any
+}
+
+export class FullScanCommand<HashKeyType = any, SortKeyType = any, ValueType = any> {
+    readonly exclusiveStartKey: any; 
+
+    constructor(
+        readonly dynamoDBClient: DynamoDBClient,
+        readonly tableName: string,
+        options?: ScanCommandOptions
+    ) {
+        if (options?.from) {
+            this.exclusiveStartKey = options.from;
+        }
+    }
+
+    async send(): Promise<ScanCommandResult<KeyType & ValueType>> {
+        const results = await this.dynamoDBClient.send(new ScanCommand({
+            TableName: this.tableName,
+            ExclusiveStartKey: this.exclusiveStartKey
         }));
 
         return {
