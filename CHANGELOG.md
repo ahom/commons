@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0](https://www.github.com/Toaztr/commons/compare/v1.22.0...v1.23.0) (2021-10-20)
+
+
+### Features
+
+* Adds FilterExpression to Query ([4bb6c7e](https://www.github.com/Toaztr/commons/commit/4bb6c7ed8c33afe81ac633e76ffae78b77952439))
+
 ## [1.22.0](https://www.github.com/Toaztr/commons/compare/v1.21.1...v1.22.0) (2021-10-20)
 
 
