@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.0](https://www.github.com/Toaztr/commons/compare/v1.20.1...v1.21.0) (2021-10-20)
+
+
+### Features
+
+* Adds FullScan command ([739981d](https://www.github.com/Toaztr/commons/commit/739981df41212f218bf5e99cb32aa17abe3935b3))
+
 ### [1.20.1](https://www.github.com/Toaztr/commons/compare/v1.20.0...v1.20.1) (2021-10-18)
 
 
