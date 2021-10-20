@@ -3,16 +3,17 @@ process.env.AWS_REGION = 'LOCAL'
 import { mocked } from 'ts-jest/utils';
 jest.mock('@aws-sdk/client-dynamodb');
 
-import { DynamoDBClient, PutItemCommand, GetItemCommand, DeleteItemCommand, UpdateItemCommand, QueryCommand, BatchWriteItemCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, PutItemCommand, GetItemCommand, DeleteItemCommand, UpdateItemCommand, QueryCommand, BatchWriteItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 const mockedPutItemCommand = mocked(PutItemCommand);
 const mockedBatchWriteItemCommand = mocked(BatchWriteItemCommand);
 const mockedUpdateItemCommand = mocked(UpdateItemCommand);
 const mockedGetItemCommand = mocked(GetItemCommand);
 const mockedDeleteItemCommand = mocked(DeleteItemCommand);
 const mockedQueryCommand = mocked(QueryCommand);
+const mockedScanCommand = mocked(ScanCommand);
 const mockedDynamoDBClient = mocked(DynamoDBClient, true);
 
-import { CreateCommand, DeleteCommand, RetrieveCommand, UpdateCommand, ReplaceCommand, ListCommand, BatchWriteCommand } from '../src/db/commands';
+import { CreateCommand, DeleteCommand, RetrieveCommand, UpdateCommand, ReplaceCommand, ListCommand, BatchWriteCommand, FullScanCommand } from '../src/db/commands';
 
 const dynamoDBClient = new DynamoDBClient({});
 const mockedSend = mocked(dynamoDBClient.send);
@@ -476,6 +477,28 @@ describe('ListCommand', () => {
                     Limit: 15,
                     ScanIndexForward: true,
                     IndexName: 'index',
+                    ExclusiveStartKey: {
+                        test: 'lol'
+                    }
+                })
+            );
+        });
+    });
+});
+
+describe('FullScanCommand', () => {
+    test('Sends right command to DynamoDBClient', () => {
+        mockedScanCommand.mockClear();
+        return new FullScanCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                from: { test: 'lol' }
+            }
+        ).send().then(data => {
+            expect(mockedScanCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
                     ExclusiveStartKey: {
                         test: 'lol'
                     }
