@@ -463,7 +463,7 @@ export interface ScanCommandResult<ValueType = any> {
     readonly items: ValueType[]
 }
 
-export interface ScanCommandOptions {
+export interface FullScanCommandOptions {
     readonly from?: any
 }
 
@@ -473,7 +473,7 @@ export class FullScanCommand<HashKeyType = any, SortKeyType = any, ValueType = a
     constructor(
         readonly dynamoDBClient: DynamoDBClient,
         readonly tableName: string,
-        options?: ScanCommandOptions
+        options?: FullScanCommandOptions
     ) {
         if (options?.from) {
             this.exclusiveStartKey = options.from;
