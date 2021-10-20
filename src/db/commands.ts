@@ -14,12 +14,12 @@ function encodeNamesAndValues(obj: {[key: string]: any}, prefix?: string) {
 
     Object.entries(obj).forEach(([k, v], i) => {
         const keyParts = k.split('.');
-        const keyPartNames = keyParts.map((kp, j) => `#${pre}${i}_${j}`);
+        const keyPartNames = keyParts.map((kp, j) => `#${pre}_${i}_${j}`);
         for (let j in keyParts) {
             names[keyPartNames[j]] = keyParts[j];
         }
-        values[`:${pre}${i}`] = v;
-        mapping[keyPartNames.join('.')] = `:${pre}${i}`;
+        values[`:${pre}_${i}`] = v;
+        mapping[keyPartNames.join('.')] = `:${pre}_${i}`;
     })
 
     values = marshall(values, { removeUndefinedValues: true });
@@ -28,12 +28,12 @@ function encodeNamesAndValues(obj: {[key: string]: any}, prefix?: string) {
 }
 
 export class CreateCommand<KeyType = any, ValueType = any> implements TransactionItemCompatibleCommand {
-    readonly item: any;
-    readonly conditionExpression: string;
+    item: any;
+    conditionExpression: string;
 
     constructor(
-        readonly dynamoDBClient: DynamoDBClient,
-        readonly tableName: string,
+        private dynamoDBClient: DynamoDBClient,
+        private tableName: string,
         key: KeyType,
         value: ValueType
     ) {
@@ -66,11 +66,11 @@ export class CreateCommand<KeyType = any, ValueType = any> implements Transactio
 }
 
 export class BatchWriteCommand<KeyType = any, ValueType = any> {
-    readonly batches: any[][] = [];
+    batches: any[][] = [];
 
     constructor(
-        readonly dynamoDBClient: DynamoDBClient,
-        readonly tableName: string,
+        private dynamoDBClient: DynamoDBClient,
+        private tableName: string,
         records: {
             key: KeyType,
             value: ValueType
@@ -118,26 +118,28 @@ export class BatchWriteCommand<KeyType = any, ValueType = any> {
 }
 
 export interface RetrieveCommandOptions {
-    readonly consistentRead?: boolean
+    consistentRead?: boolean
 }
 
 export class RetrieveCommand<KeyType = any, ValueType = any> {
-    readonly key: any;
+    key: any;
+    consistentRead: boolean;
 
     constructor(
-        readonly dynamoDBClient: DynamoDBClient,
-        readonly tableName: string,
+        private dynamoDBClient: DynamoDBClient,
+        private tableName: string,
         key: KeyType,
-        readonly options?: RetrieveCommandOptions
+        options?: RetrieveCommandOptions
     ) {
         this.key = marshall(key);
+        this.consistentRead = options?.consistentRead ?? false;
     }
 
     async send(): Promise<KeyType & ValueType | null> {
         const item = await this.dynamoDBClient.send(new GetItemCommand({
             TableName: this.tableName,
             Key: this.key,
-            ConsistentRead: this.options?.consistentRead
+            ConsistentRead: this.consistentRead
         }));
 
         if (item?.Item) {
@@ -149,19 +151,19 @@ export class RetrieveCommand<KeyType = any, ValueType = any> {
 }
 
 export interface UpdateCommandOptions {
-    readonly additionalConditions?: {[key: string]: any}
+    additionalConditions?: {[key: string]: any}
 }
 
 export class UpdateCommand<KeyType = any, ValueType = any> implements TransactionItemCompatibleCommand {
-    readonly key: any;
-    readonly updateExpression: string;
-    readonly expressionAttributesNames: {[key: string]: string};
-    readonly expressionAttributeValues: {[key: string]: any};
-    readonly conditionExpression: string;
+    key: any;
+    updateExpression: string;
+    expressionAttributesNames: {[key: string]: string};
+    expressionAttributeValues: {[key: string]: any};
+    conditionExpression: string;
 
     constructor(
-        readonly dynamoDBClient: DynamoDBClient,
-        readonly tableName: string,
+        private dynamoDBClient: DynamoDBClient,
+        private tableName: string,
         key: KeyType,
         set: {[key: string]: any},
         options?: UpdateCommandOptions
@@ -228,18 +230,18 @@ export class UpdateCommand<KeyType = any, ValueType = any> implements Transactio
 }
 
 export interface ReplaceCommandOptions {
-    readonly additionalConditions?: {[key: string]: any}
+    additionalConditions?: {[key: string]: any}
 }
 
 export class ReplaceCommand<KeyType = any, ValueType = any> implements TransactionItemCompatibleCommand {
-    readonly item: any;
-    readonly expressionAttributesNames: {[key: string]: string};
-    readonly expressionAttributeValues: {[key: string]: any};
-    readonly conditionExpression: string;
+    item: any;
+    expressionAttributesNames: {[key: string]: string};
+    expressionAttributeValues: {[key: string]: any};
+    conditionExpression: string;
 
     constructor(
-        readonly dynamoDBClient: DynamoDBClient,
-        readonly tableName: string,
+        private dynamoDBClient: DynamoDBClient,
+        private tableName: string,
         key: KeyType,
         value: ValueType,
         options?: ReplaceCommandOptions
@@ -287,18 +289,18 @@ export class ReplaceCommand<KeyType = any, ValueType = any> implements Transacti
 }
 
 export interface DeleteCommandOptions {
-    readonly additionalConditions?: {[key: string]: any}
+    additionalConditions?: {[key: string]: any}
 }
 
 export class DeleteCommand<KeyType = any> implements TransactionItemCompatibleCommand {
-    readonly key: any;
-    readonly expressionAttributesNames: {[key: string]: string};
-    readonly expressionAttributeValues: {[key: string]: any};
-    readonly conditionExpression: string;
+    key: any;
+    expressionAttributesNames: {[key: string]: string};
+    expressionAttributeValues: {[key: string]: any};
+    conditionExpression: string;
 
     constructor(
-        readonly dynamoDBClient: DynamoDBClient,
-        readonly tableName: string,
+        private dynamoDBClient: DynamoDBClient,
+        private tableName: string,
         key: KeyType,
         options?: DeleteCommandOptions
     ) {
@@ -345,58 +347,59 @@ export class DeleteCommand<KeyType = any> implements TransactionItemCompatibleCo
 }
 
 export interface ListCommandResult<ValueType = any> {
-    readonly count: number,
-    readonly cursor?: any,
-    readonly items: ValueType[]
+    count: number,
+    cursor?: any,
+    items: ValueType[]
 }
 
-type SortKeyCriteriaOperator = 'begins_with' | '>' | '>=' | '<' | '<=';
 
-export interface SortKeyCriteria<SortKeyType> {
-    readonly operator: SortKeyCriteriaOperator,
-    readonly value: SortKeyType
+type LeafCriteriaOperator = 'begins_with' | '>' | '>=' | '<' | '<=' | '=';
+export interface LeafFilterCriteria<ValueType = any> {
+    operator: LeafCriteriaOperator,
+    value: ValueType
 }
 
-function sortKeyCriteriaToCondition(operator: SortKeyCriteriaOperator, name: string, value: string) {
+function leafCriteriaToCondition(operator: LeafCriteriaOperator, name: string, value: string) {
     if (operator === 'begins_with') {
         return `${operator}(${name}, ${value})`;
     }
     return `${name} ${operator} ${value}`;
 }
 
+export type SortKeyCriteria<SortKeyType> = LeafFilterCriteria<SortKeyType>;
+
 export interface ListCommandOptions<SortKeyType> {
-    readonly indexName?: string,
-    readonly limit?: number,
-    readonly from?: any,
-    readonly ascending?: boolean,
-    readonly count?: boolean,
-    readonly sortKeyCriteria?: SortKeyCriteria<SortKeyType>[]
+    indexName?: string,
+    limit?: number,
+    from?: any,
+    ascending?: boolean,
+    count?: boolean,
+    sortKeyCriteria?: SortKeyCriteria<SortKeyType>[],
+    filterCriteria?: LeafFilterCriteria[][]
 }
 
 export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> {
-    readonly keyConditionExpression: string;
-    readonly expressionAttributesNames: {[key: string]: string};
-    readonly expressionAttributeValues: {[key: string]: any};
-    readonly indexName?: string;
-    readonly limit: number;
-    readonly ascendingScan: boolean;
-    readonly count: boolean;
-    readonly exclusiveStartKey: any; 
+    keyConditionExpression: string;
+    filterExpression?: string;
+    expressionAttributesNames: {[key: string]: string};
+    expressionAttributeValues: {[key: string]: any};
+    indexName?: string;
+    limit?: number;
+    ascendingScan: boolean;
+    count?: boolean;
+    exclusiveStartKey?: any; 
 
     constructor(
-        readonly dynamoDBClient: DynamoDBClient,
-        readonly tableName: string,
+        private dynamoDBClient: DynamoDBClient,
+        private tableName: string,
         hashKey: HashKeyType,
         options?: ListCommandOptions<SortKeyType>
     ) {
         this.indexName = options?.indexName;
-        this.limit = options?.limit ?? 20;
+        this.limit = options?.limit;
         this.ascendingScan = options?.ascending ?? true;
-        this.count = options?.count ?? false;
-
-        if (options?.from) {
-            this.exclusiveStartKey = options.from;
-        }
+        this.count = options?.count;
+        this.exclusiveStartKey = options?.from;
 
         const { names, values, mapping } = encodeNamesAndValues(hashKey);
         this.expressionAttributeValues = values;
@@ -404,14 +407,46 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
         if (Object.entries(mapping).length != 1) {
             throw Error(`hashKey should only have one field, got: ${JSON.stringify(hashKey)}`);
         }
-        let conditions = [
+        let keyConditions = [
             Object.entries(mapping)[0].join(' = ')
         ];
-
         if (options?.sortKeyCriteria) {
-            for (const idx in options.sortKeyCriteria) {
-                const { operator, value } = options.sortKeyCriteria[idx];
-                const { names, values, mapping } = encodeNamesAndValues(value, `skc${idx}`);
+            keyConditions = keyConditions.concat(this.computeKeyConditions(options.sortKeyCriteria));
+        }
+        if (keyConditions.length > 0) {
+            this.keyConditionExpression = keyConditions.join(' AND ');
+        }
+
+        if (options?.filterCriteria) {
+            this.filterExpression = this.computeFilterExpression(options.filterCriteria);
+        }
+    }
+
+    private computeKeyConditions(sortKeyCriteria: SortKeyCriteria<SortKeyType>[]): string[] {
+        let conditions: string[][] = [];
+        for (const idx in sortKeyCriteria) {
+            const { operator, value } = sortKeyCriteria[idx];
+            const { names, values, mapping } = encodeNamesAndValues(value, `skc-${idx}`);
+            this.expressionAttributeValues = {
+                ...this.expressionAttributeValues,
+                ...values
+            };
+            this.expressionAttributesNames = {
+                ...this.expressionAttributesNames,
+                ...names
+            };
+            conditions.push(Object.entries(mapping).map(([k, v]) => leafCriteriaToCondition(operator, k, v)));
+        }
+        return conditions.flatMap(x => x);
+    }
+
+    private computeFilterExpression(filterCriteria: LeafFilterCriteria[][]): string {
+        let orConditions: string[] = [];
+        for (const idx in filterCriteria) {
+            let andConditions: string[][] = [];
+            for (const jdx in filterCriteria[idx]) {
+                const { operator, value } = filterCriteria[idx][jdx];
+                const { names, values, mapping } = encodeNamesAndValues(value, `fc-${idx}-${jdx}`);
                 this.expressionAttributeValues = {
                     ...this.expressionAttributeValues,
                     ...values
@@ -420,21 +455,22 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
                     ...this.expressionAttributesNames,
                     ...names
                 };
-                conditions = conditions.concat(
-                    ...Object.entries(mapping).map(([k, v]) => sortKeyCriteriaToCondition(operator, k, v))
+                andConditions = andConditions.concat(
+                    Object.entries(mapping).map(
+                        ([k, v]) => leafCriteriaToCondition(operator, k, v)
+                    )
                 );
             }
+            orConditions.push(`(${andConditions.join(' AND ')})`);
         }
-
-        if (conditions.length > 0) {
-            this.keyConditionExpression = conditions.join(' AND ');
-        }
+        return orConditions.join(' OR ');
     }
 
     async send(): Promise<ListCommandResult<KeyType & ValueType>> {
         const results = await this.dynamoDBClient.send(new QueryCommand({
             TableName: this.tableName,
             KeyConditionExpression: this.keyConditionExpression,
+            FilterExpression: this.filterExpression,
             ExpressionAttributeNames: this.expressionAttributesNames,
             ExpressionAttributeValues: this.expressionAttributeValues,
             ExclusiveStartKey: this.exclusiveStartKey,
@@ -462,21 +498,21 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
 }
 
 export interface FullScanCommandResult<ValueType = any> {
-    readonly count: number,
-    readonly cursor?: any,
-    readonly items: ValueType[]
+    count: number,
+    cursor?: any,
+    items: ValueType[]
 }
 
 export interface FullScanCommandOptions {
-    readonly from?: any
+    from?: any
 }
 
 export class FullScanCommand<HashKeyType = any, SortKeyType = any, ValueType = any> {
-    readonly exclusiveStartKey: any; 
+    exclusiveStartKey: any; 
 
     constructor(
-        readonly dynamoDBClient: DynamoDBClient,
-        readonly tableName: string,
+        private dynamoDBClient: DynamoDBClient,
+        private tableName: string,
         options?: FullScanCommandOptions
     ) {
         if (options?.from) {
