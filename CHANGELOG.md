@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://www.github.com/Toaztr/commons/compare/v1.21.1...v1.22.0) (2021-10-20)
+
+
+### Features
+
+* Adds count to Query ([84f7955](https://www.github.com/Toaztr/commons/commit/84f7955df4d75ca2934bcbd01f736e92c76f7d94))
+
 ### [1.21.1](https://www.github.com/Toaztr/commons/compare/v1.21.0...v1.21.1) (2021-10-20)
 
 
