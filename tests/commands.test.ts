@@ -217,19 +217,19 @@ describe('UpdateCommand', () => {
                             S: '123'
                         }
                     },
-                    UpdateExpression: 'SET #0_0 = :0, #1_0.#1_1 = :1',
+                    UpdateExpression: 'SET #_0_0 = :_0, #_1_0.#_1_1 = :_1',
                     ExpressionAttributeNames: {
-                        '#0_0': 'value',
-                        '#1_0': 'nested',
-                        '#1_1': 'value',
-                        '#cond0_0': 'field' 
+                        '#_0_0': 'value',
+                        '#_1_0': 'nested',
+                        '#_1_1': 'value',
+                        '#cond_0_0': 'field' 
                     },
                     ExpressionAttributeValues: {
-                        ':0': { S: 'lol' },
-                        ':1': { S: 'lil' },
-                        ':cond0': { S: 'value' }
+                        ':_0': { S: 'lol' },
+                        ':_1': { S: 'lil' },
+                        ':cond_0': { S: 'value' }
                     },
-                    ConditionExpression: 'attribute_exists(id) AND #cond0_0 = :cond0',
+                    ConditionExpression: 'attribute_exists(id) AND #cond_0_0 = :cond_0',
                     ReturnValues: 'ALL_NEW'
                 })
             );
@@ -272,12 +272,12 @@ describe('ReplaceCommand', () => {
                         }
                     },
                     ExpressionAttributeNames: {
-                        '#0_0': 'field' 
+                        '#_0_0': 'field' 
                     },
                     ExpressionAttributeValues: {
-                        ':0': { S: 'value' }
+                        ':_0': { S: 'value' }
                     },
-                    ConditionExpression: 'attribute_exists(id) AND #0_0 = :0',
+                    ConditionExpression: 'attribute_exists(id) AND #_0_0 = :_0',
                 })
             );
         });
@@ -371,12 +371,12 @@ describe('DeleteCommand', () => {
                         }
                     },
                     ExpressionAttributeNames: {
-                        '#0_0': 'field' 
+                        '#_0_0': 'field' 
                     },
                     ExpressionAttributeValues: {
-                        ':0': { S: 'value' }
+                        ':_0': { S: 'value' }
                     },
-                    ConditionExpression: 'attribute_exists(id) AND #0_0 = :0',
+                    ConditionExpression: 'attribute_exists(id) AND #_0_0 = :_0',
                 })
             );
         });
@@ -425,12 +425,12 @@ describe('ListCommand', () => {
             expect(mockedQueryCommand).toBeCalledWith(
                 expect.objectContaining({
                     TableName: 'table',
-                    KeyConditionExpression: '#0_0 = :0',
+                    KeyConditionExpression: '#_0_0 = :_0',
                     ExpressionAttributeNames: {
-                        '#0_0': 'id'
+                        '#_0_0': 'id'
                     },
                     ExpressionAttributeValues: {
-                        ':0': { S: '123' },
+                        ':_0': { S: '123' },
                     },
                     Limit: 15,
                     ScanIndexForward: true,
@@ -459,12 +459,12 @@ describe('ListCommand', () => {
             expect(mockedQueryCommand).toBeCalledWith(
                 expect.objectContaining({
                     TableName: 'table',
-                    KeyConditionExpression: '#0_0 = :0',
+                    KeyConditionExpression: '#_0_0 = :_0',
                     ExpressionAttributeNames: {
-                        '#0_0': 'id'
+                        '#_0_0': 'id'
                     },
                     ExpressionAttributeValues: {
-                        ':0': { S: '123' },
+                        ':_0': { S: '123' },
                     },
                     Limit: 15,
                     ScanIndexForward: true,
@@ -476,7 +476,7 @@ describe('ListCommand', () => {
             );
         });
     });
-    test('Sends right command to DynamoDBClient with index and sortKeyCriteria', () => {
+    test('Sends right command to DynamoDBClient with index and sortKeyCriteria/filterCriteria', () => {
         mockedQueryCommand.mockClear();
         return new ListCommand(
             dynamoDBClient,
@@ -492,22 +492,39 @@ describe('ListCommand', () => {
                 sortKeyCriteria: [
                     { operator: 'begins_with', value: { sort: 'start' }},
                     { operator: '<', value: { sort: 'lower' }}
+                ],
+                filterCriteria: [
+                    [
+                        { operator: '>=', value: { ['test.nested']: 12 }},
+                        { operator: '=', value: { lol: 'ah' }},
+                    ],
+                    [
+                        { operator: 'begins_with', value: { lil: 'bla' }}
+                    ]
                 ]
             }
         ).send().then(data => {
             expect(mockedQueryCommand).toBeCalledWith(
                 expect.objectContaining({
                     TableName: 'table',
-                    KeyConditionExpression: '#0_0 = :0 AND begins_with(#skc00_0, :skc00) AND #skc10_0 < :skc10',
+                    KeyConditionExpression: '#_0_0 = :_0 AND begins_with(#skc-0_0_0, :skc-0_0) AND #skc-1_0_0 < :skc-1_0',
+                    FilterExpression: '(#fc-0-0_0_0.#fc-0-0_0_1 >= :fc-0-0_0 AND #fc-0-1_0_0 = :fc-0-1_0) OR (begins_with(#fc-1-0_0_0, :fc-1-0_0))',
                     ExpressionAttributeNames: {
-                        '#0_0': 'id',
-                        '#skc00_0': 'sort',
-                        '#skc10_0': 'sort'
+                        '#_0_0': 'id',
+                        '#skc-0_0_0': 'sort',
+                        '#skc-1_0_0': 'sort',
+                        '#fc-0-0_0_0': 'test',
+                        '#fc-0-0_0_1': 'nested',
+                        '#fc-0-1_0_0': 'lol',
+                        '#fc-1-0_0_0': 'lil'
                     },
                     ExpressionAttributeValues: {
-                        ':0': { S: '123' },
-                        ':skc00': { S: 'start' },
-                        ':skc10': { S: 'lower' }
+                        ':_0': { S: '123' },
+                        ':skc-0_0': { S: 'start' },
+                        ':skc-1_0': { S: 'lower' },
+                        ':fc-0-0_0': { N: '12' },
+                        ':fc-0-1_0': { S: 'ah' },
+                        ':fc-1-0_0': { S: 'bla' }
                     },
                     Limit: 15,
                     ScanIndexForward: true,
