@@ -369,6 +369,7 @@ export interface ListCommandOptions<SortKeyType> {
     readonly limit?: number,
     readonly from?: any,
     readonly ascending?: boolean,
+    readonly count?: boolean,
     readonly sortKeyCriteria?: SortKeyCriteria<SortKeyType>[]
 }
 
@@ -379,6 +380,7 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
     readonly indexName?: string;
     readonly limit: number;
     readonly ascendingScan: boolean;
+    readonly count: boolean;
     readonly exclusiveStartKey: any; 
 
     constructor(
@@ -390,6 +392,7 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
         this.indexName = options?.indexName;
         this.limit = options?.limit ?? 20;
         this.ascendingScan = options?.ascending ?? true;
+        this.count = options?.count ?? false;
 
         if (options?.from) {
             this.exclusiveStartKey = options.from;
@@ -437,7 +440,8 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
             ExclusiveStartKey: this.exclusiveStartKey,
             ScanIndexForward: this.ascendingScan,
             IndexName: this.indexName,
-            Limit: this.limit
+            Limit: this.limit,
+            Select: this.count ? 'COUNT' : undefined
         }));
 
         return {
@@ -457,7 +461,7 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
     }
 }
 
-export interface ScanCommandResult<ValueType = any> {
+export interface FullScanCommandResult<ValueType = any> {
     readonly count: number,
     readonly cursor?: any,
     readonly items: ValueType[]
@@ -480,7 +484,7 @@ export class FullScanCommand<HashKeyType = any, SortKeyType = any, ValueType = a
         }
     }
 
-    async send(): Promise<ScanCommandResult<KeyType & ValueType>> {
+    async send(): Promise<FullScanCommandResult<KeyType & ValueType>> {
         const results = await this.dynamoDBClient.send(new ScanCommand({
             TableName: this.tableName,
             ExclusiveStartKey: this.exclusiveStartKey

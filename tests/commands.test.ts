@@ -441,6 +441,41 @@ describe('ListCommand', () => {
             );
         });
     });
+    test('Sends right command to DynamoDBClient with count', () => {
+        mockedQueryCommand.mockClear();
+        return new ListCommand(
+            dynamoDBClient,
+            'table', 
+            {
+                id: '123'
+            }, 
+            {
+                limit: 15,
+                ascending: true,
+                from: { test: 'lol' },
+                count: true
+            }
+        ).send().then(data => {
+            expect(mockedQueryCommand).toBeCalledWith(
+                expect.objectContaining({
+                    TableName: 'table',
+                    KeyConditionExpression: '#0_0 = :0',
+                    ExpressionAttributeNames: {
+                        '#0_0': 'id'
+                    },
+                    ExpressionAttributeValues: {
+                        ':0': { S: '123' },
+                    },
+                    Limit: 15,
+                    ScanIndexForward: true,
+                    ExclusiveStartKey: {
+                        test: 'lol'
+                    },
+                    Select: 'COUNT'
+                })
+            );
+        });
+    });
     test('Sends right command to DynamoDBClient with index and sortKeyCriteria', () => {
         mockedQueryCommand.mockClear();
         return new ListCommand(
