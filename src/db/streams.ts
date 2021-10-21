@@ -10,11 +10,11 @@ export interface DynamoDBStreamEvent {
     }[]
 };
 
-export interface EventBridgeType<EventName extends string, EventPayload, HashKeyType = {}, SortKeyType = {}> {
+export interface EventBridgeType<EventName extends string, EventPayload> {
     Source: EventName,
     DetailType: `${EventName}.${Lowercase<EventType>}`,
     Detail?: {
-        key: HashKeyType & SortKeyType,
-        value?: HashKeyType & SortKeyType & EventPayload
+        key: any,
+        value?: EventPayload
     }
 }
