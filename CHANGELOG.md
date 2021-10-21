@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.0](https://www.github.com/Toaztr/commons/compare/v1.23.0...v1.24.0) (2021-10-21)
+
+
+### Features
+
+* Adds streams types ([79c1b0a](https://www.github.com/Toaztr/commons/commit/79c1b0a630d80ea03d452e2bd787d3b477395702))
+
 ## [1.23.0](https://www.github.com/Toaztr/commons/compare/v1.22.0...v1.23.0) (2021-10-20)
 
 
