@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.24.1](https://www.github.com/Toaztr/commons/compare/v1.24.0...v1.24.1) (2021-10-21)
+
+
+### Bug Fixes
+
+* Fix EventBridgeType ([7a39a21](https://www.github.com/Toaztr/commons/commit/7a39a211b9252297f99261510a79aa1881926045))
+
 ## [1.24.0](https://www.github.com/Toaztr/commons/compare/v1.23.0...v1.24.0) (2021-10-21)
 
 
