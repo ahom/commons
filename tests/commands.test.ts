@@ -507,24 +507,24 @@ describe('ListCommand', () => {
             expect(mockedQueryCommand).toBeCalledWith(
                 expect.objectContaining({
                     TableName: 'table',
-                    KeyConditionExpression: '#_0_0 = :_0 AND begins_with(#skc-0_0_0, :skc-0_0) AND #skc-1_0_0 < :skc-1_0',
-                    FilterExpression: '(#fc-0-0_0_0.#fc-0-0_0_1 >= :fc-0-0_0 AND #fc-0-1_0_0 = :fc-0-1_0) OR (begins_with(#fc-1-0_0_0, :fc-1-0_0))',
+                    KeyConditionExpression: '#_0_0 = :_0 AND begins_with(#skc_0_0_0, :skc_0_0) AND #skc_1_0_0 < :skc_1_0',
+                    FilterExpression: '(#fc_0_0_0_0.#fc_0_0_0_1 >= :fc_0_0_0 AND #fc_0_1_0_0 = :fc_0_1_0) OR (begins_with(#fc_1_0_0_0, :fc_1_0_0))',
                     ExpressionAttributeNames: {
                         '#_0_0': 'id',
-                        '#skc-0_0_0': 'sort',
-                        '#skc-1_0_0': 'sort',
-                        '#fc-0-0_0_0': 'test',
-                        '#fc-0-0_0_1': 'nested',
-                        '#fc-0-1_0_0': 'lol',
-                        '#fc-1-0_0_0': 'lil'
+                        '#skc_0_0_0': 'sort',
+                        '#skc_1_0_0': 'sort',
+                        '#fc_0_0_0_0': 'test',
+                        '#fc_0_0_0_1': 'nested',
+                        '#fc_0_1_0_0': 'lol',
+                        '#fc_1_0_0_0': 'lil'
                     },
                     ExpressionAttributeValues: {
                         ':_0': { S: '123' },
-                        ':skc-0_0': { S: 'start' },
-                        ':skc-1_0': { S: 'lower' },
-                        ':fc-0-0_0': { N: '12' },
-                        ':fc-0-1_0': { S: 'ah' },
-                        ':fc-1-0_0': { S: 'bla' }
+                        ':skc_0_0': { S: 'start' },
+                        ':skc_1_0': { S: 'lower' },
+                        ':fc_0_0_0': { N: '12' },
+                        ':fc_0_1_0': { S: 'ah' },
+                        ':fc_1_0_0': { S: 'bla' }
                     },
                     Limit: 15,
                     ScanIndexForward: true,
