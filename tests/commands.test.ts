@@ -489,42 +489,43 @@ describe('ListCommand', () => {
                 ascending: true,
                 from: { test: 'lol' },
                 indexName: 'index',
-                sortKeyCriteria: [
-                    { operator: 'begins_with', value: { sort: 'start' }},
-                    { operator: '<', value: { sort: 'lower' }}
-                ],
+                sortKeyCriterion: {
+                    name: 'sort',
+                    operator: 'BETWEEN',
+                    leftValue: 'start',
+                    rightValue: 'end'
+                },
                 filterCriteria: [
                     [
-                        { operator: '>=', value: { ['test.nested']: 12 }},
-                        { operator: '=', value: { lol: 'ah' }},
+                        { name: 'test', operator: '>=', value: 12 },
+                        { name: 'lol', operator: '=', value: 'ah' },
                     ],
                     [
-                        { operator: 'begins_with', value: { lil: 'bla' }}
+                        { name: 'lil', operator: 'begins_with', value: 'bla' }
                     ]
                 ]
-            }
+            },
+            'attr'
         ).send().then(data => {
             expect(mockedQueryCommand).toBeCalledWith(
                 expect.objectContaining({
                     TableName: 'table',
-                    KeyConditionExpression: '#_0_0 = :_0 AND begins_with(#skc_0_0_0, :skc_0_0) AND #skc_1_0_0 < :skc_1_0',
-                    FilterExpression: '(#fc_0_0_0_0.#fc_0_0_0_1 >= :fc_0_0_0 AND #fc_0_1_0_0 = :fc_0_1_0) OR (begins_with(#fc_1_0_0_0, :fc_1_0_0))',
+                    KeyConditionExpression: '#_0_0 = :_0 AND #skc BETWEEN :skc_l AND :skc_r',
+                    FilterExpression: '(attr.#fc_0_0 >= :fc_0_0 AND attr.#fc_0_1 = :fc_0_1) OR (begins_with(attr.#fc_1_0, :fc_1_0))',
                     ExpressionAttributeNames: {
                         '#_0_0': 'id',
-                        '#skc_0_0_0': 'sort',
-                        '#skc_1_0_0': 'sort',
-                        '#fc_0_0_0_0': 'test',
-                        '#fc_0_0_0_1': 'nested',
-                        '#fc_0_1_0_0': 'lol',
-                        '#fc_1_0_0_0': 'lil'
+                        '#skc': 'sort',
+                        '#fc_0_0': 'test',
+                        '#fc_0_1': 'lol',
+                        '#fc_1_0': 'lil'
                     },
                     ExpressionAttributeValues: {
                         ':_0': { S: '123' },
-                        ':skc_0_0': { S: 'start' },
-                        ':skc_1_0': { S: 'lower' },
-                        ':fc_0_0_0': { N: '12' },
-                        ':fc_0_1_0': { S: 'ah' },
-                        ':fc_1_0_0': { S: 'bla' }
+                        ':skc_l': { S: 'start' },
+                        ':skc_r': { S: 'end' },
+                        ':fc_0_0': { N: '12' },
+                        ':fc_0_1': { S: 'ah' },
+                        ':fc_1_0': { S: 'bla' }
                     },
                     Limit: 15,
                     ScanIndexForward: true,
