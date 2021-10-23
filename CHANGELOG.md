@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.24.2](https://www.github.com/Toaztr/commons/compare/v1.24.1...v1.24.2) (2021-10-23)
+
+
+### Bug Fixes
+
+* Release previous commit ([44a0537](https://www.github.com/Toaztr/commons/commit/44a0537196cfc09ec2106c9f918b7f94122e93c6))
+
 ### [1.24.1](https://www.github.com/Toaztr/commons/compare/v1.24.0...v1.24.1) (2021-10-21)
 
 
