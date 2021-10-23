@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://www.github.com/Toaztr/commons/compare/v1.24.3...v1.25.0) (2021-10-23)
+
+
+### Features
+
+* criteria revamped ([a9f0fe4](https://www.github.com/Toaztr/commons/commit/a9f0fe41fea803f7540efffafeaf0aa5a8002d3e))
+
 ### [1.24.3](https://www.github.com/Toaztr/commons/compare/v1.24.2...v1.24.3) (2021-10-23)
 
 
