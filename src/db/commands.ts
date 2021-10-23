@@ -426,7 +426,7 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
         let conditions: string[][] = [];
         for (const idx in sortKeyCriteria) {
             const { operator, value } = sortKeyCriteria[idx];
-            const { names, values, mapping } = encodeNamesAndValues(value, `skc-${idx}`);
+            const { names, values, mapping } = encodeNamesAndValues(value, `skc_${idx}`);
             this.expressionAttributeValues = {
                 ...this.expressionAttributeValues,
                 ...values
@@ -446,7 +446,7 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
             let andConditions: string[][] = [];
             for (const jdx in filterCriteria[idx]) {
                 const { operator, value } = filterCriteria[idx][jdx];
-                const { names, values, mapping } = encodeNamesAndValues(value, `fc-${idx}-${jdx}`);
+                const { names, values, mapping } = encodeNamesAndValues(value, `fc_${idx}_${jdx}`);
                 this.expressionAttributeValues = {
                     ...this.expressionAttributeValues,
                     ...values
