@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.24.3](https://www.github.com/Toaztr/commons/compare/v1.24.2...v1.24.3) (2021-10-23)
+
+
+### Bug Fixes
+
+* fix hyphens in attribute names ([83fb92f](https://www.github.com/Toaztr/commons/commit/83fb92fe4599cfd21271a808a818304f7cc80611))
+
 ### [1.24.2](https://www.github.com/Toaztr/commons/compare/v1.24.1...v1.24.2) (2021-10-23)
 
 
