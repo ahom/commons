@@ -352,33 +352,82 @@ export interface ListCommandResult<ValueType = any> {
     items: ValueType[]
 }
 
+type MonoLeafCriterionOperator = 'begins_with' | '>' | '>=' | '<' | '<=' | '=';
+type DuoLeafCriterionOperator = 'BETWEEN';
+export type LeafCriterion<FilterType = any> = {
+    name: keyof FilterType,
+    operator: MonoLeafCriterionOperator,
+    value: FilterType[LeafCriterion<FilterType>['name']]
 
-type LeafCriteriaOperator = 'begins_with' | '>' | '>=' | '<' | '<=' | '=';
-export interface LeafFilterCriteria<ValueType = any> {
-    operator: LeafCriteriaOperator,
-    value: ValueType
-}
+} | {
+    name: keyof FilterType,
+    operator: DuoLeafCriterionOperator,
+    leftValue: FilterType[LeafCriterion<FilterType>['name']],
+    rightValue: FilterType[LeafCriterion<FilterType>['name']]
+};
 
-function leafCriteriaToCondition(operator: LeafCriteriaOperator, name: string, value: string) {
-    if (operator === 'begins_with') {
-        return `${operator}(${name}, ${value})`;
+type ResolvedLeafCriterion = LeafCriterion<{[key: string]: string}>;
+
+function leafCriterionToCondition(resolvedCriterion: ResolvedLeafCriterion) { 
+    if (resolvedCriterion.operator === 'BETWEEN') {
+        return `${resolvedCriterion.name} BETWEEN ${resolvedCriterion.leftValue} AND ${resolvedCriterion.rightValue}`
     }
-    return `${name} ${operator} ${value}`;
+    if (resolvedCriterion.operator === 'begins_with') {
+        return `begins_with(${resolvedCriterion.name}, ${resolvedCriterion.value})`;
+    }
+    return `${resolvedCriterion.name} ${resolvedCriterion.operator} ${resolvedCriterion.value}`;
 }
 
-export type SortKeyCriteria<SortKeyType> = LeafFilterCriteria<SortKeyType>;
+function encodeLeafCriterion<FilterType>(
+    criterion: LeafCriterion<FilterType>,
+    prefix: string,
+    names: {[key: string]: string},
+    values: {[key: string]: any},
+    namePrefix?: string
+): ResolvedLeafCriterion {
+    const pre = namePrefix ? `${namePrefix}.` : '';
 
-export interface ListCommandOptions<SortKeyType> {
+    names[`#${prefix}`] = criterion.name as string;
+
+    if (criterion.operator === 'BETWEEN') {
+        Object.entries(marshall({
+            [`:${prefix}_l`]: criterion.leftValue,
+            [`:${prefix}_r`]: criterion.rightValue,
+        })).forEach(([k, v]) => {
+            values[k] = v
+        });
+        return {
+            operator: 'BETWEEN',
+            name: `${pre}#${prefix}`,
+            leftValue: `:${prefix}_l`,
+            rightValue: `:${prefix}_r`
+        };
+    }
+    Object.entries(marshall({
+        [`:${prefix}`]: criterion.value
+    })).forEach(([k, v]) => {
+        values[k] = v
+    });
+    return {
+        operator: criterion.operator,
+        name: `${pre}#${prefix}`,
+        value: `:${prefix}`
+    };
+}
+
+export type SortKeyCriterion<SortKeyType> = LeafCriterion<SortKeyType>;
+
+export interface ListCommandOptions<SortKeyType, FilterType> {
     indexName?: string,
     limit?: number,
     from?: any,
     ascending?: boolean,
     count?: boolean,
-    sortKeyCriteria?: SortKeyCriteria<SortKeyType>[],
-    filterCriteria?: LeafFilterCriteria[][]
+    sortKeyCriterion?: SortKeyCriterion<SortKeyType>,
+    filterCriteria?: LeafCriterion<FilterType>[][]
 }
 
-export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> {
+export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any, FilterType = any> {
     keyConditionExpression: string;
     filterExpression?: string;
     expressionAttributesNames: {[key: string]: string};
@@ -393,7 +442,8 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
         private dynamoDBClient: DynamoDBClient,
         private tableName: string,
         hashKey: HashKeyType,
-        options?: ListCommandOptions<SortKeyType>
+        options?: ListCommandOptions<SortKeyType, FilterType>,
+        attributesPrefix?: string
     ) {
         this.indexName = options?.indexName;
         this.limit = options?.limit;
@@ -410,60 +460,43 @@ export class ListCommand<HashKeyType = any, SortKeyType = any, ValueType = any> 
         let keyConditions = [
             Object.entries(mapping)[0].join(' = ')
         ];
-        if (options?.sortKeyCriteria) {
-            keyConditions = keyConditions.concat(this.computeKeyConditions(options.sortKeyCriteria));
+        if (options?.sortKeyCriterion) {
+            keyConditions.push(this.computeKeyConditions(options.sortKeyCriterion));
         }
         if (keyConditions.length > 0) {
             this.keyConditionExpression = keyConditions.join(' AND ');
         }
 
         if (options?.filterCriteria) {
-            this.filterExpression = this.computeFilterExpression(options.filterCriteria);
+            this.filterExpression = this.computeFilterExpression(options.filterCriteria, attributesPrefix);
         }
     }
 
-    private computeKeyConditions(sortKeyCriteria: SortKeyCriteria<SortKeyType>[]): string[] {
-        let conditions: string[][] = [];
-        for (const idx in sortKeyCriteria) {
-            const { operator, value } = sortKeyCriteria[idx];
-            const { names, values, mapping } = encodeNamesAndValues(value, `skc_${idx}`);
-            this.expressionAttributeValues = {
-                ...this.expressionAttributeValues,
-                ...values
-            };
-            this.expressionAttributesNames = {
-                ...this.expressionAttributesNames,
-                ...names
-            };
-            conditions.push(Object.entries(mapping).map(([k, v]) => leafCriteriaToCondition(operator, k, v)));
-        }
-        return conditions.flatMap(x => x);
+    private computeKeyConditions(sortKeyCriterion: SortKeyCriterion<SortKeyType>): string {
+        return leafCriterionToCondition(
+            encodeLeafCriterion(
+                sortKeyCriterion,
+                'skc',
+                this.expressionAttributesNames,
+                this.expressionAttributeValues
+            )
+        );
     }
 
-    private computeFilterExpression(filterCriteria: LeafFilterCriteria[][]): string {
-        let orConditions: string[] = [];
-        for (const idx in filterCriteria) {
-            let andConditions: string[][] = [];
-            for (const jdx in filterCriteria[idx]) {
-                const { operator, value } = filterCriteria[idx][jdx];
-                const { names, values, mapping } = encodeNamesAndValues(value, `fc_${idx}_${jdx}`);
-                this.expressionAttributeValues = {
-                    ...this.expressionAttributeValues,
-                    ...values
-                };
-                this.expressionAttributesNames = {
-                    ...this.expressionAttributesNames,
-                    ...names
-                };
-                andConditions = andConditions.concat(
-                    Object.entries(mapping).map(
-                        ([k, v]) => leafCriteriaToCondition(operator, k, v)
+    private computeFilterExpression(filterCriteria: LeafCriterion<FilterType>[][], attributesPrefix?: string): string {
+        return filterCriteria.map((andConditions, idx) => 
+            `(${andConditions.map((cond, jdx) => 
+                leafCriterionToCondition(
+                    encodeLeafCriterion(
+                        cond,
+                        `fc_${idx}_${jdx}`,
+                        this.expressionAttributesNames,
+                        this.expressionAttributeValues,
+                        attributesPrefix
                     )
-                );
-            }
-            orConditions.push(`(${andConditions.join(' AND ')})`);
-        }
-        return orConditions.join(' OR ');
+                )
+            ).join(' AND ')})`
+        ).join(' OR ');
     }
 
     async send(): Promise<ListCommandResult<KeyType & ValueType>> {

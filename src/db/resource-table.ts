@@ -121,12 +121,13 @@ export class ResourceTable<H, S, HT, ST, A> {
         );
     }
 
-    listCommand(hashKey: H, options?: Omit<ListCommandOptions<ST>, 'indexName'>) {
+    listCommand(hashKey: H, options?: Omit<ListCommandOptions<ST, A>, 'indexName'>) {
         return new ListCommand<HT, ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
             this.props.hashTransform(hashKey),
-            options
+            options,
+            'attributes'
         );
     }
 

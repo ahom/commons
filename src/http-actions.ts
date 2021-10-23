@@ -182,8 +182,8 @@ export function deleteResource<H, S, HT, ST, A>(props: {
     };
 }
 
-interface Listable<H, HT, ST> {
-  listCommand(hashKey: H, options?: Omit<ListCommandOptions<ST>, 'indexName'>): ListCommand<HT, ST, any>;
+interface Listable<H, HT, ST, FT> {
+  listCommand(hashKey: H, options?: Omit<ListCommandOptions<ST, FT>, 'indexName'>): ListCommand<HT, ST, any, FT>;
 } 
 
 type SortOrder = 'asc' | 'desc';
@@ -191,10 +191,10 @@ const orderToAscending: {[k in SortOrder]: boolean} = {
     asc: true,
     desc: false
 };
-export function listResources<H, HT, ST>(props: {
-    listable: Listable<H, HT, ST>,
+export function listResources<H, HT, ST, FT>(props: {
+    listable: Listable<H, HT, ST, FT>,
     hashKeyFn: (r: HttpRequest) => H,
-    optionsFn?: (r: HttpRequest) => Omit<ListCommandOptions<ST>, 'indexName'>
+    optionsFn?: (r: HttpRequest) => Omit<ListCommandOptions<ST, FT>, 'indexName'>
 }): HttpRequestAsyncFunc {
     return async (r: HttpRequest) => {
         let ascending = false;

@@ -351,15 +351,11 @@ describe('ListResources', () => {
                 listable: table,
                 hashKeyFn: (r) => ({ id: r.params!.id! }),
                 optionsFn: (r) => ({
-                    sortKeyCriteria: [
-                        {
-                            operator: 'begins_with',
-                            value: { sort: 'asc' }
-                        }, {
-                            operator: '>',
-                            value: { sort: 'desc' }
-                        }
-                    ]
+                    sortKeyCriterion: {
+                        name: 'sort',
+                        operator: 'begins_with',
+                        value: 'asc'
+                    }
                 }) 
             })).then(data => {
                 expect(data.statusCode).toEqual(200);

@@ -15,7 +15,7 @@ export class Index<H, S, HT, ST> {
   ) {
   }
 
-  listCommand(hashKey: H, options?: Omit<ListCommandOptions<ST>, 'indexName'>) {
+  listCommand(hashKey: H, options?: Omit<ListCommandOptions<ST, any>, 'indexName'>) {
     return new ListCommand(
       this.dynamoDBClient,
       this.tableName,
