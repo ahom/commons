@@ -17,8 +17,9 @@ export function postResourceCommand<H, S, HT, ST, A>(r: HttpRequest, props: {
     const id = props.idFn ? props.idFn(r) : defaultIdCreator(r);
     return props.table.createCommand(
         id,
-        props.keyFn(r, id), 
-        props.overrideFields ? props.overrideFields(r, data) : data
+        props.keyFn(r, id),
+        props.overrideFields ? props.overrideFields(r, data) : data,
+        r.secContext.props.userId
     );
 }
 
@@ -97,6 +98,7 @@ export function putResourceCommand<H, S, HT, ST, A>(r: HttpRequest, props: {
     return props.table.updateCommand(
         props.keyFn(r), 
         data,
+        r.secContext.props.userId,
         {
             ...(props.updateOptions ? props.updateOptions(r) : {}),
             ...(etag ? {

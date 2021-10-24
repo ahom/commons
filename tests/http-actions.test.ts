@@ -90,10 +90,12 @@ describe('PostResource', () => {
         })
     });
     test('201 on success', () => {
+        const userId = "user_id";
         return HttpRequest.fromEvent({
                 body: JSON.stringify({
                     postal_code: '06600'
-                })
+                }),
+                requestContext: { authorizer: { lambda: { userId: userId } } }
             })
             .run(postResourceFunc)
             .then(data => {
@@ -110,7 +112,11 @@ describe('PostResource', () => {
                 expect(obj.data.id).toBeTruthy();
                 expect(obj.data.meta.etag).toBeTruthy();
                 expect(obj.data.meta.created_at).toBeTruthy();
+                expect(obj.data.meta.created_by).toBeTruthy();
+                expect(obj.data.meta.created_by).toEqual(userId);
                 expect(obj.data.meta.last_updated_at).toBeTruthy();
+                expect(obj.data.meta.last_updated_by).toBeTruthy();
+                expect(obj.data.meta.last_updated_by).toEqual(userId);
             });
     });
     test('400 on no body', () => {
