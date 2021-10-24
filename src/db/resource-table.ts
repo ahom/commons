@@ -9,7 +9,9 @@ export interface Resource<AttributesType extends Object> {
     readonly meta: { 
         readonly etag: string,
         readonly created_at: string,
-        readonly last_updated_at: string
+        readonly created_by: string,
+        readonly last_updated_at: string,
+        readonly last_updated_by: string
     }
 }
 
@@ -40,7 +42,7 @@ export class ResourceTable<H, S, HT, ST, A> {
         }
     }
 
-    buildItem(id: string, key: H & S, attributes: A, ttl?: Date) {
+    buildItem(id: string, key: H & S, attributes: A, userId: string, ttl?: Date) {
         const now = new Date().toISOString();
         return {
             ...(this.props.doNotIncludeKeys ? {} : key),
@@ -51,7 +53,9 @@ export class ResourceTable<H, S, HT, ST, A> {
                 meta: {
                     etag: `"${uuid()}"`,
                     created_at: now,
-                    last_updated_at: now
+                    created_by: userId,
+                    last_updated_at: now,
+                    last_updated_by: userId
                 }
             }),
             ...(ttl ? {
@@ -60,16 +64,16 @@ export class ResourceTable<H, S, HT, ST, A> {
         };
     }
 
-    createCommand(id: string, key: H & S, attributes: A, ttl?: Date) {
+    createCommand(id: string, key: H & S, attributes: A, userId: string, ttl?: Date ) {
         return new CreateCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
             this.buildKey(key),
-            this.buildItem(id, key, attributes, ttl)
+            this.buildItem(id, key, attributes, userId, ttl)
         );
     }
 
-    batchWriteCommand(items: {id: string, key: H & S, attributes: A, ttl?: Date}[]) {
+    batchWriteCommand(items: {id: string, key: H & S, attributes: A, userId: string, ttl?: Date}[]) {
         const now = new Date().toISOString();
         return new BatchWriteCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
@@ -77,7 +81,7 @@ export class ResourceTable<H, S, HT, ST, A> {
             items.map(
                 item => ({
                     key: this.buildKey(item.key),
-                    value: this.buildItem(item.id, item.key, item.attributes, item.ttl)
+                    value: this.buildItem(item.id, item.key, item.attributes, item.userId, item.ttl)
                 })
             )
         );
@@ -92,7 +96,7 @@ export class ResourceTable<H, S, HT, ST, A> {
         );
     }
 
-    updateCommand(key: H & S, attributes: A, options?: UpdateCommandOptions, ttl?: Date) {
+    updateCommand(key: H & S, attributes: A, userId: string, options?: UpdateCommandOptions, ttl?: Date) {
         return new UpdateCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,
@@ -101,6 +105,7 @@ export class ResourceTable<H, S, HT, ST, A> {
                 ...(this.props.transform ? this.props.transform(key, attributes) : {}),
                 attributes: attributes,
                 ...(this.props.doNotIncludeMeta ? {} : {
+                    'meta.last_updated_by': userId,
                     'meta.last_updated_at': new Date().toISOString(),
                     'meta.etag': `"${uuid()}`
                 }),
