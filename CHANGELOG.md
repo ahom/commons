@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0](https://www.github.com/Toaztr/commons/compare/v1.25.0...v1.26.0) (2021-10-26)
+
+
+### Features
+
+* Set created_by and updated_by in meta ([d8f39b5](https://www.github.com/Toaztr/commons/commit/d8f39b5b11c94ddb485a421c15a991e5260077b6))
+
 ## [1.25.0](https://www.github.com/Toaztr/commons/compare/v1.24.3...v1.25.0) (2021-10-23)
 
 
