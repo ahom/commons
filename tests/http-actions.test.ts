@@ -5,7 +5,7 @@ import { mocked } from 'ts-jest/utils';
 jest.mock('@aws-sdk/client-dynamodb');
 
 import { HttpRequest } from '../src/http';
-import { deleteResource, getResource, postResource, putResource, listResources } from '../src/http-actions';
+import { deleteResource, getResource, postResource, putResource, putPartialResource, listResources } from '../src/http-actions';
 import { resourceTable } from '../src/db/resource-table';
 
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';

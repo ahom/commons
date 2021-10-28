@@ -74,7 +74,6 @@ export class ResourceTable<H, S, HT, ST, A> {
     }
 
     batchWriteCommand(items: {id: string, key: H & S, attributes: A, userId: string, ttl?: Date}[]) {
-        const now = new Date().toISOString();
         return new BatchWriteCommand<HT & ST, H & S & Resource<A>>(
             this.dynamoDBClient,
             this.tableName,

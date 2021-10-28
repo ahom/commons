@@ -28,7 +28,7 @@
   "homepage": "https://github.com/Toaztr/commons#readme",
   "devDependencies": {
     "@types/jest": "27.0.2",
-    "@types/node": "16.11.4",
+    "@types/node": "16.11.6",
     "@types/uuid": "8.3.1",
     "jest": "27.3.1",
     "jest-html-reporters": "2.1.6",
@@ -40,8 +40,8 @@
     "@aws-sdk/client-dynamodb": "3.38.0",
     "@aws-sdk/client-lambda": "3.38.0",
     "@aws-sdk/util-dynamodb": "3.38.0",
-    "axios": "0.23.0",
-    "axios-retry": "3.2.3",
+    "axios": "0.24.0",
+    "axios-retry": "3.2.4",
     "uuid": "8.3.2"
   }
 }

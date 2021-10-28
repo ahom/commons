@@ -1,7 +1,7 @@
-import { DeleteCommandOptions, ListCommand, ListCommandOptions, UpdateCommandOptions } from "./db/commands";
-import { filterResourceFields, ResourceTable } from "./db/resource-table";
-import { HttpRequest, HttpRequestAsyncFunc } from "./http";
-import { consistentReadHeader, ifMatchHeader, uuid } from "./utils";
+import { DeleteCommandOptions, ListCommand, ListCommandOptions, UpdateCommandOptions } from './db/commands';
+import { filterResourceFields, ResourceTable } from './db/resource-table';
+import { HttpRequest, HttpRequestAsyncFunc } from './http';
+import { consistentReadHeader, ifMatchHeader, uuid } from './utils';
 
 function defaultIdCreator(r: HttpRequest) {
     return uuid();
@@ -139,6 +139,36 @@ export function putResource<H, S, HT, ST, A>(props: {
             }
             throw err;
         }
+    };
+}
+
+export function putPartialResource<H, S, HT, ST, A>(props: {
+    table: ResourceTable<H, S, HT, ST, A>,
+    keyFn: (r: HttpRequest) => H & S,
+    updateOptions?: (r: HttpRequest) => UpdateCommandOptions
+}): HttpRequestAsyncFunc {
+    return async (r: HttpRequest) => {
+        const value = await props.table.retrieveCommand(props.keyFn(r)).send();
+        if (!value) {
+            return {
+                statusCode: 404
+            };
+        }
+
+        const etag = fetchETag(r);
+        if (etag && etag !== value.meta.etag) {
+            return {
+                statusCode: 409
+            }; 
+        }
+
+        return await putResource(props)(HttpRequest.fromEvent({
+            ...r.event,
+            body: JSON.stringify({
+                ...value.attributes,
+                ...r.bodyAsJson()
+            })
+        }));
     };
 }
 
