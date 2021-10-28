@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.27.0](https://www.github.com/Toaztr/commons/compare/v1.26.0...v1.27.0) (2021-10-28)
+
+
+### Features
+
+* Adds putPartialResource ([8d2aace](https://www.github.com/Toaztr/commons/commit/8d2aace40fa76a8bb012bf3e115e29b23923b7f6))
+
 ## [1.26.0](https://www.github.com/Toaztr/commons/compare/v1.25.0...v1.26.0) (2021-10-26)
 
 
