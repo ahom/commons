@@ -1,6 +1,6 @@
 import { DeleteCommandOptions, ListCommand, ListCommandOptions, UpdateCommandOptions } from './db/commands';
 import { filterResourceFields, ResourceTable } from './db/resource-table';
-import { HttpRequest, HttpRequestAsyncFunc } from './http';
+import { getUserFromRequest, HttpRequest, HttpRequestAsyncFunc } from './http';
 import { consistentReadHeader, ifMatchHeader, uuid } from './utils';
 
 function defaultIdCreator(r: HttpRequest) {
@@ -19,7 +19,7 @@ export function postResourceCommand<H, S, HT, ST, A>(r: HttpRequest, props: {
         id,
         props.keyFn(r, id),
         props.overrideFields ? props.overrideFields(r, data) : data,
-        r.secContext.props.userId
+        getUserFromRequest(r)
     );
 }
 
@@ -98,7 +98,7 @@ export function putResourceCommand<H, S, HT, ST, A>(r: HttpRequest, props: {
     return props.table.updateCommand(
         props.keyFn(r), 
         data,
-        r.secContext.props.userId,
+        getUserFromRequest(r),
         {
             ...(props.updateOptions ? props.updateOptions(r) : {}),
             ...(etag ? {
