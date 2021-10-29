@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.27.2](https://www.github.com/Toaztr/commons/compare/v1.27.1...v1.27.2) (2021-10-29)
+
+
+### Bug Fixes
+
+* Adds function to get user from a HTTP request ([c294971](https://www.github.com/Toaztr/commons/commit/c29497100beef9264c4a25daf4ee64c9765ecb3a))
+
 ### [1.27.1](https://www.github.com/Toaztr/commons/compare/v1.27.0...v1.27.1) (2021-10-29)
 
 
