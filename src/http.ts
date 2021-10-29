@@ -255,3 +255,7 @@ export function hasValidPayload(validationFunc: ValidationFunctionType): HttpReq
         return undefined;
     };
 }
+
+export function getUserFromRequest(r: HttpRequest): string {
+    return r.secContext.props.userId ?? r.secContext.props.subscription?.itemId ?? '<unknown>';
+}

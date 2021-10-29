@@ -90,7 +90,7 @@ describe('PostResource', () => {
         })
     });
     test('201 on success', () => {
-        const userId = "user_id";
+        const userId = 'user_id';
         return HttpRequest.fromEvent({
                 body: JSON.stringify({
                     postal_code: '06600'
