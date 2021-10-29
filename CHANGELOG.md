@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.27.1](https://www.github.com/Toaztr/commons/compare/v1.27.0...v1.27.1) (2021-10-29)
+
+
+### Bug Fixes
+
+* **deps:** update aws-sdk-js-v3 monorepo to v3.39.0 ([0b555e1](https://www.github.com/Toaztr/commons/commit/0b555e10fb236af0abb67c9035fafc6d6506ab90))
+
 ## [1.27.0](https://www.github.com/Toaztr/commons/compare/v1.26.0...v1.27.0) (2021-10-28)
 
 
