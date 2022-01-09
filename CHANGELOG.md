@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.0](https://www.github.com/Toaztr/commons/compare/v1.27.2...v1.28.0) (2022-01-09)
+
+
+### Features
+
+* Upgrade dependencies ([f16b5a6](https://www.github.com/Toaztr/commons/commit/f16b5a673d6c63ed53921da3b706ecb677e626af))
+
 ### [1.27.2](https://www.github.com/Toaztr/commons/compare/v1.27.1...v1.27.2) (2021-10-29)
 
 
