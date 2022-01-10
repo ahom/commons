@@ -6,7 +6,7 @@
     "build": "tsc",
     "test": "npx jest --silent",
     "test:coverage": "npx jest --silent --coverage",
-    "sync": "git remote -v | grep upstream || git remote add upstream git@github.com:Toaztr/commons.git && git checkout master && git fetch upstream master && git rebase upstream/master && git push origin"
+    "sync": "(git remote get-url upstream || git remote add upstream git@github.com:Toaztr/commons.git) && git checkout master && git fetch upstream master && git rebase upstream/master && git push origin"
   },
   "files": [
     "dist"
