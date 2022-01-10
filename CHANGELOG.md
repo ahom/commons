@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.0](https://www.github.com/Toaztr/commons/compare/v1.28.0...v1.29.0) (2022-01-10)
+
+
+### Features
+
+* adds isBase64Encoded ([e81e52e](https://www.github.com/Toaztr/commons/commit/e81e52ec050cbbbdf887843bd1b9855de880edbb))
+
 ## [1.28.0](https://www.github.com/Toaztr/commons/compare/v1.27.2...v1.28.0) (2022-01-09)
 
 
