@@ -40,13 +40,15 @@ export interface HttpResponse {
     links?: any,
     data?: any,
     errors?: ErrorMessage[],
-    rawBody?: string
+    rawBody?: string,
+    isBase64Encoded?: boolean
 }
 
 export interface HttpEventResponse {
     statusCode?: number,
     headers?: Headers,
-    body?: string
+    body?: string,
+    isBase64Encoded?: boolean
 } 
 
 export type HttpRequestAsyncFunc = (r: HttpRequest) => Promise<HttpResponse>; 
@@ -137,7 +139,8 @@ export class HttpRequest {
                 links: this.resp.links,
                 data: this.resp.data,
                 errors: this.resp.errors
-            })
+            }),
+            isBase64Encoded: this.resp.isBase64Encoded
         };
     }
 
