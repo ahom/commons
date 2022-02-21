@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.0](https://www.github.com/Toaztr/commons/compare/v1.29.0...v1.30.0) (2022-02-21)
+
+
+### Features
+
+* Update dependencies ([70a940f](https://www.github.com/Toaztr/commons/commit/70a940f6db692ce7cb96dc76beba1f947f6ca9f0))
+
 ## [1.29.0](https://www.github.com/Toaztr/commons/compare/v1.28.0...v1.29.0) (2022-01-10)
 
 
