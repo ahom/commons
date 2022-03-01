@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.0](https://www.github.com/Toaztr/commons/compare/v1.30.0...v1.31.0) (2022-03-01)
+
+
+### Features
+
+* Adds xray metadata for http lambda ([541b9ed](https://www.github.com/Toaztr/commons/commit/541b9ed00cebb00196a6f7441a211624b72b9b45))
+
 ## [1.30.0](https://www.github.com/Toaztr/commons/compare/v1.29.0...v1.30.0) (2022-02-21)
 
 
