@@ -1,3 +1,4 @@
+import { getSegment, Segment } from 'aws-xray-sdk-core';
 import { SecurityContext, AuthorizerContext } from './sec';
 
 type Headers = {[header: string]: boolean | number | string};
@@ -130,6 +131,24 @@ export class HttpRequest {
                     };
                 }
             }
+        }
+        try {
+            const segment = getSegment();
+            if (this.resp.statusCode >= 500) {
+                segment.addFaultFlag();
+            } else if (this.resp.statusCode >= 400) {
+                segment.addErrorFlag();
+            }
+            (segment as any).http = {
+                request: {
+                    method: this.event.requestContext.http.method,
+                    url: this.event.requestContext.http.path
+                },
+                response: {
+                    status: this.resp.statusCode
+                }
+            };
+        } catch(_) {
         }
         return {
             statusCode: this.resp.statusCode,
