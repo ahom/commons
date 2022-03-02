@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.31.1](https://www.github.com/Toaztr/commons/compare/v1.31.0...v1.31.1) (2022-03-02)
+
+
+### Bug Fixes
+
+* log error while updating XRay segment ([d35a8aa](https://www.github.com/Toaztr/commons/commit/d35a8aa2d83f14ba2276fcbacea9ccc5a6d3ed51))
+
 ## [1.31.0](https://www.github.com/Toaztr/commons/compare/v1.30.0...v1.31.0) (2022-03-01)
 
 
