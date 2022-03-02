@@ -1,4 +1,4 @@
-import { getSegment, Segment } from 'aws-xray-sdk-core';
+import { getSegment, setContextMissingStrategy, Subsegment } from 'aws-xray-sdk-core';
 import { SecurityContext, AuthorizerContext } from './sec';
 
 type Headers = {[header: string]: boolean | number | string};
@@ -68,9 +68,11 @@ function clean(d: any): any {
     }
 }
 
+setContextMissingStrategy('LOG_ERROR');
 export class HttpRequest {
     private resp?: HttpResponse;
     private jsonPayload?: any;
+    private subSegment?: Subsegment;
     
     private constructor(
         public readonly event: HttpEvent, 
@@ -79,6 +81,7 @@ export class HttpRequest {
         public readonly params?: Parameters,
         public readonly queryParams?: Parameters
     ) {
+        this.subSegment = getSegment()?.addNewSubsegment('toaztr');
     }
 
     bodyAsJson(): any {
@@ -132,14 +135,8 @@ export class HttpRequest {
                 }
             }
         }
-        try {
-            const segment = getSegment();
-            if (this.resp.statusCode >= 500) {
-                segment.addFaultFlag();
-            } else if (this.resp.statusCode >= 400) {
-                segment.addErrorFlag();
-            }
-            (segment as any).http = {
+        if (this.subSegment) {
+            this.subSegment.addAttribute('http', { 
                 request: {
                     method: this.event.requestContext.http.method,
                     url: this.event.requestContext.http.path
@@ -147,10 +144,13 @@ export class HttpRequest {
                 response: {
                     status: this.resp.statusCode
                 }
-            };
-            console.log(`XRay segment: ${segment.toString()}`);
-        } catch(err) {
-            console.error(err);
+            });
+            if (this.resp.statusCode >= 500) {
+                this.subSegment.addFaultFlag();
+            } else if (this.resp.statusCode >= 400) {
+                this.subSegment.addErrorFlag();
+            }
+            this.subSegment.close();
         }
         return {
             statusCode: this.resp.statusCode,
