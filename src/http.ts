@@ -148,7 +148,9 @@ export class HttpRequest {
                     status: this.resp.statusCode
                 }
             };
-        } catch(_) {
+            console.log(`XRay segment: ${segment.toString()}`);
+        } catch(err) {
+            console.error(err);
         }
         return {
             statusCode: this.resp.statusCode,
