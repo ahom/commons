@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.31.2](https://www.github.com/Toaztr/commons/compare/v1.31.1...v1.31.2) (2022-03-02)
+
+
+### Bug Fixes
+
+* proper subsegment for tracing ([f35504b](https://www.github.com/Toaztr/commons/commit/f35504bc41b5e935f17760d2ac533f1bd4acbe00))
+
 ### [1.31.1](https://www.github.com/Toaztr/commons/compare/v1.31.0...v1.31.1) (2022-03-02)
 
 
