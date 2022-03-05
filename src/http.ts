@@ -81,7 +81,7 @@ export class HttpRequest {
         public readonly params?: Parameters,
         public readonly queryParams?: Parameters
     ) {
-        this.subSegment = getSegment()?.addNewSubsegment('toaztr');
+        this.subSegment = getSegment()?.addNewSubsegment('Toaztr');
     }
 
     bodyAsJson(): any {
@@ -136,6 +136,7 @@ export class HttpRequest {
             }
         }
         if (this.subSegment) {
+            this.subSegment.addAttribute('namespace', 'remote');
             this.subSegment.addAttribute('http', { 
                 request: {
                     method: this.event.requestContext.http.method,
