@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.31.4](https://www.github.com/Toaztr/commons/compare/v1.31.3...v1.31.4) (2022-03-05)
+
+
+### Bug Fixes
+
+* remove remote traces ([a2f4439](https://www.github.com/Toaztr/commons/commit/a2f4439fbd498cecba548fbaa3b7f5661489f6ff))
+
 ### [1.31.3](https://www.github.com/Toaztr/commons/compare/v1.31.2...v1.31.3) (2022-03-05)
 
 
