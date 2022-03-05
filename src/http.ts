@@ -136,7 +136,6 @@ export class HttpRequest {
             }
         }
         if (this.subSegment) {
-            this.subSegment.addAttribute('namespace', 'remote');
             this.subSegment.addAttribute('http', { 
                 request: {
                     method: this.event.requestContext.http.method,
