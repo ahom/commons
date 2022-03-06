@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.32.2](https://www.github.com/Toaztr/commons/compare/v1.32.1...v1.32.2) (2022-03-06)
+
+
+### Bug Fixes
+
+* remove origin ([501fb2e](https://www.github.com/Toaztr/commons/commit/501fb2e5f297ab6d1221f931bafce0569cb548f6))
+
 ### [1.32.1](https://www.github.com/Toaztr/commons/compare/v1.32.0...v1.32.1) (2022-03-06)
 
 
