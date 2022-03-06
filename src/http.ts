@@ -141,7 +141,7 @@ export class HttpRequest {
         if (!segment) {
             await exec();
         } else {
-            const subSegment = segment.addNewSubsegment(`Toaztr-${this.event.routeKey?.replace(' ', '-')}`);
+            const subSegment = segment.addNewSubsegment(`Toaztr-${this.event.routeKey?.replace(/\{|\}/g, ':')}`);
             subSegment.addAttribute('namespace', 'remote');
             await getNamespace().runPromise(async function() {
                 setSegment(subSegment);
