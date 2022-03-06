@@ -143,7 +143,6 @@ export class HttpRequest {
             await exec();
         } else {
             const subSegment = new Segment(`Toaztr-${this.event.routeKey?.replace(/\{|\}/g, ':')}`, segment.trace_id, segment.id);
-            subSegment.origin = 'Toaztr::HTTP';
             await getNamespace().runPromise(async function() {
                 setSegment(subSegment);
                 await exec();
