@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.32.1](https://www.github.com/Toaztr/commons/compare/v1.32.0...v1.32.1) (2022-03-06)
+
+
+### Bug Fixes
+
+* better trace names ([0f28582](https://www.github.com/Toaztr/commons/commit/0f28582ac0911dea510290193d9ab3e282f7231a))
+
 ## [1.32.0](https://www.github.com/Toaztr/commons/compare/v1.31.4...v1.32.0) (2022-03-06)
 
 
