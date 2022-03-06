@@ -1,6 +1,6 @@
 {
   "name": "@toaztr/commons",
-  "version": "1.32.2",
+  "version": "1.32.3",
   "description": "Common utilities",
   "scripts": {
     "build": "tsc",

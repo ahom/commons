@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.32.3](https://www.github.com/Toaztr/commons/compare/v1.32.2...v1.32.3) (2022-03-06)
+
+
+### Bug Fixes
+
+* Segment name withou curly braces ([9ab8fea](https://www.github.com/Toaztr/commons/commit/9ab8fead947e5fd18e07b43c89eac77762fa7a1b))
+
 ### [1.32.2](https://www.github.com/Toaztr/commons/compare/v1.32.1...v1.32.2) (2022-03-06)
 
 
