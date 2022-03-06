@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.32.0](https://www.github.com/Toaztr/commons/compare/v1.31.4...v1.32.0) (2022-03-06)
+
+
+### Features
+
+* remote Tracing + context set ([35a316e](https://www.github.com/Toaztr/commons/commit/35a316e44d7e7728eeda8cb40a62d74619228cad))
+
 ### [1.31.4](https://www.github.com/Toaztr/commons/compare/v1.31.3...v1.31.4) (2022-03-05)
 
 
