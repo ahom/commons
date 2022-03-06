@@ -1,4 +1,5 @@
-import { getNamespace, getSegment, setContextMissingStrategy, setSegment } from 'aws-xray-sdk-core';
+import { getNamespace, getSegment, resolveSegment, Segment, setContextMissingStrategy, setSegment, Subsegment } from 'aws-xray-sdk-core';
+import IncomingRequestData from 'aws-xray-sdk-core/dist/lib/middleware/incoming_request_data';
 import { SecurityContext, AuthorizerContext } from './sec';
 
 type Headers = {[header: string]: boolean | number | string};
@@ -137,19 +138,19 @@ export class HttpRequest {
                 }
             }
         };
-        const segment = getSegment();
+        const segment = getSegment() as Segment | undefined;
         if (!segment) {
             await exec();
         } else {
-            const subSegment = segment.addNewSubsegment(`Toaztr-${this.event.routeKey?.replace(/\{|\}/g, ':')}`);
-            subSegment.addAttribute('namespace', 'remote');
+            const subSegment = new Segment(`Toaztr-${this.event.routeKey?.replace(/\{|\}/g, ':')}`, segment.trace_id, segment.id);
+            subSegment.origin = 'Toaztr::HTTP';
             await getNamespace().runPromise(async function() {
                 setSegment(subSegment);
                 await exec();
             }).finally(() => {
                 setSegment(segment);
             });
-            subSegment.addAttribute('http', { 
+            (subSegment as any).http = { 
                 request: {
                     method: this.event.requestContext.http.method,
                     url: this.event.requestContext.http.path
@@ -157,7 +158,7 @@ export class HttpRequest {
                 response: {
                     status: this.resp.statusCode
                 }
-            });
+            };
             if (this.resp.statusCode >= 500) {
                 subSegment.addFaultFlag();
             } else if (this.resp.statusCode >= 400) {
