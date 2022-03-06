@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.32.4](https://www.github.com/Toaztr/commons/compare/v1.32.3...v1.32.4) (2022-03-06)
+
+
+### Bug Fixes
+
+* Try brand new XRay segment ([aa9c36c](https://www.github.com/Toaztr/commons/commit/aa9c36c2b64fdb1e593e0123bdd3dc8e80b57a62))
+
 ### [1.32.3](https://www.github.com/Toaztr/commons/compare/v1.32.2...v1.32.3) (2022-03-06)
 
 
