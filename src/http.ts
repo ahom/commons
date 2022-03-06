@@ -21,7 +21,8 @@ export interface HttpEvent {
     pathParameters?: Parameters,
     queryStringParameters?: Parameters,
     rawPath?: string,
-    rawQueryString?: string
+    rawQueryString?: string,
+    routeKey?: string
 }
 
 interface ErrorMessage {
@@ -140,11 +141,14 @@ export class HttpRequest {
         if (!segment) {
             await exec();
         } else {
-            const subSegment = segment?.addNewSubsegment(`Toaztr-${segment.name}`);
+            const subSegment = segment?.addNewSubsegment(`Toaztr-${this.event.routeKey?.replace(' ', '-')}`);
             subSegment.addAttribute('namespace', 'remote');
+            subSegment.addAttribute('origin', 'Toaztr::HTTP');
             await getNamespace().runPromise(async function() {
                 setSegment(subSegment);
                 await exec();
+            }).finally(() => {
+                setSegment(segment);
             });
             subSegment.addAttribute('http', { 
                 request: {
