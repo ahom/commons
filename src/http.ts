@@ -1,4 +1,4 @@
-import { getSegment, setContextMissingStrategy, Subsegment } from 'aws-xray-sdk-core';
+import { getNamespace, getSegment, setContextMissingStrategy, setSegment } from 'aws-xray-sdk-core';
 import { SecurityContext, AuthorizerContext } from './sec';
 
 type Headers = {[header: string]: boolean | number | string};
@@ -72,7 +72,6 @@ setContextMissingStrategy('LOG_ERROR');
 export class HttpRequest {
     private resp?: HttpResponse;
     private jsonPayload?: any;
-    private subSegment?: Subsegment;
     
     private constructor(
         public readonly event: HttpEvent, 
@@ -81,7 +80,6 @@ export class HttpRequest {
         public readonly params?: Parameters,
         public readonly queryParams?: Parameters
     ) {
-        this.subSegment = getSegment()?.addNewSubsegment('Toaztr');
     }
 
     bodyAsJson(): any {
@@ -123,20 +121,32 @@ export class HttpRequest {
     }
 
     async run(func: HttpRequestAsyncFunc): Promise<HttpEventResponse> {
-        if (!this.resp) {
-            try {
-                this.resp = await func(this);
-            } catch(err) {
-                if (!this.resp) {
-                    console.error(err);
-                    this.resp = {
-                        statusCode: 500
-                    };
+        const self = this;
+        const exec = async function() {
+            if (!self.resp) {
+                try {
+                    self.resp = await func(self);
+                } catch(err) {
+                    if (!self.resp) {
+                        console.error(err);
+                        self.resp = {
+                            statusCode: 500
+                        };
+                    }
                 }
             }
-        }
-        if (this.subSegment) {
-            this.subSegment.addAttribute('http', { 
+        };
+        const segment = getSegment();
+        if (!segment) {
+            await exec();
+        } else {
+            const subSegment = segment?.addNewSubsegment(`Toaztr-${segment.name}`);
+            subSegment.addAttribute('namespace', 'remote');
+            await getNamespace().runPromise(async function() {
+                setSegment(subSegment);
+                await exec();
+            });
+            subSegment.addAttribute('http', { 
                 request: {
                     method: this.event.requestContext.http.method,
                     url: this.event.requestContext.http.path
@@ -146,11 +156,11 @@ export class HttpRequest {
                 }
             });
             if (this.resp.statusCode >= 500) {
-                this.subSegment.addFaultFlag();
+                subSegment.addFaultFlag();
             } else if (this.resp.statusCode >= 400) {
-                this.subSegment.addErrorFlag();
+                subSegment.addErrorFlag();
             }
-            this.subSegment.close();
+            subSegment.close();
         }
         return {
             statusCode: this.resp.statusCode,
